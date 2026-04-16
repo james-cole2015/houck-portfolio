@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -5,71 +6,168 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Brooks Houck | Security Consulting Manager</title>
 
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <!-- AOS - Animate on Scroll -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
 
   <style>
     :root {
       --accent: #14b8a6;
       --accent-glow: rgba(20, 184, 166, 0.35);
-      --bg: #ffffff;
       --text: #111827;
       --muted: #6b7280;
-      --card-bg: rgba(255, 255, 255, 0.82);
-      --card-border: rgba(229, 231, 235, 0.6);
-      --section-bg: rgba(255, 255, 255, 0.72);
-      --navbar-bg: rgba(255, 255, 255, 0.85);
-      --footer-bg: rgba(255, 255, 255, 0.8);
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(229, 231, 235, 0.5);
+      --section-bg: rgba(255, 255, 255, 0.68);
+      --navbar-bg: rgba(255, 255, 255, 0.82);
+      --footer-bg: rgba(255, 255, 255, 0.78);
+      --blob1: rgba(20, 184, 166, 0.30);
+      --blob2: rgba(59, 130, 246, 0.25);
+      --blob3: rgba(124, 58, 237, 0.18);
+      --blob4: rgba(30, 41, 59, 0.10);
+      --mesh-base: #f8fafc;
+      --grid-color: rgba(100, 116, 139, 0.05);
+      --scan-color: rgba(20, 184, 166, 0.035);
     }
 
     [data-theme="dark"] {
-      --bg: #0f172a;
       --text: #e5e7eb;
       --muted: #9ca3af;
-      --card-bg: rgba(30, 41, 59, 0.82);
-      --card-border: rgba(51, 65, 85, 0.6);
-      --section-bg: rgba(15, 23, 42, 0.75);
-      --navbar-bg: rgba(15, 23, 42, 0.88);
-      --footer-bg: rgba(15, 23, 42, 0.85);
+      --card-bg: rgba(30, 41, 59, 0.80);
+      --card-border: rgba(51, 65, 85, 0.50);
+      --section-bg: rgba(15, 23, 42, 0.72);
+      --navbar-bg: rgba(15, 23, 42, 0.85);
+      --footer-bg: rgba(15, 23, 42, 0.82);
+      --blob1: rgba(20, 184, 166, 0.40);
+      --blob2: rgba(59, 130, 246, 0.35);
+      --blob3: rgba(124, 58, 237, 0.28);
+      --blob4: rgba(30, 41, 59, 0.25);
+      --mesh-base: #0f172a;
+      --grid-color: rgba(148, 163, 184, 0.07);
+      --scan-color: rgba(20, 184, 166, 0.045);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
+      margin: 0;
       color: var(--text);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       transition: color 0.4s;
       overflow-x: hidden;
     }
 
-    #vanta-bg {
+    /* ===== LAYER 1: GRADIENT MESH ===== */
+    .gradient-mesh {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       z-index: 0;
+      background-color: var(--mesh-base);
+      overflow: hidden;
+      transition: background-color 0.6s;
     }
 
+    .gradient-mesh .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      mix-blend-mode: screen;
+      will-change: transform;
+      transition: background 0.6s;
+    }
+
+    [data-theme="dark"] .gradient-mesh .blob {
+      mix-blend-mode: lighten;
+    }
+
+    .blob-1 {
+      width: 55vmax; height: 55vmax;
+      background: var(--blob1);
+      top: -15%; left: -10%;
+      animation: drift1 20s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 50vmax; height: 50vmax;
+      background: var(--blob2);
+      top: 40%; right: -15%;
+      animation: drift2 25s ease-in-out infinite alternate;
+    }
+    .blob-3 {
+      width: 45vmax; height: 45vmax;
+      background: var(--blob3);
+      bottom: -10%; left: 25%;
+      animation: drift3 18s ease-in-out infinite alternate;
+    }
+    .blob-4 {
+      width: 40vmax; height: 40vmax;
+      background: var(--blob4);
+      top: 20%; left: 50%;
+      animation: drift4 22s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift1 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(12vw, 18vh) scale(1.15); }
+    }
+    @keyframes drift2 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-14vw, -12vh) scale(1.1); }
+    }
+    @keyframes drift3 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(10vw, -15vh) scale(1.2); }
+    }
+    @keyframes drift4 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-8vw, 10vh) scale(1.08); }
+    }
+
+    /* ===== LAYER 2: CYBER GRID ===== */
+    .cyber-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg,   var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px),
+        repeating-linear-gradient(90deg,  var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px);
+      background-size: 44px 44px;
+      transition: background-image 0.4s;
+    }
+
+    .cyber-grid::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(180deg, transparent, var(--scan-color), transparent);
+      animation: scanline 9s linear infinite;
+    }
+    @keyframes scanline {
+      0%   { top: -120px; }
+      100% { top: 100%; }
+    }
+
+    /* ===== CONTENT WRAPPER ===== */
     #content-wrapper {
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     .accent { color: var(--accent); }
 
+    /* ===== NAVBAR ===== */
     .navbar {
       background: var(--navbar-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       transition: background 0.4s;
     }
     .navbar-brand { color: var(--text) !important; font-weight: 700; }
-    .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s; }
+    .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s, color 0.2s; }
     .nav-link:hover { opacity: 1; color: var(--accent) !important; }
 
+    /* ===== HERO ===== */
     .hero {
       min-height: 92vh;
       display: flex;
@@ -81,10 +179,11 @@
     .hero h3 { color: var(--accent); font-weight: 600; }
     .typed-cursor { color: var(--accent); }
 
+    /* ===== GLASS SECTIONS ===== */
     .glass-section {
       background: var(--section-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid var(--card-border);
       border-bottom: 1px solid var(--card-border);
       padding: 4rem 0;
@@ -98,6 +197,7 @@
       font-size: 1.8rem;
     }
 
+    /* ===== EXPERIENCE CARDS ===== */
     .exp-card {
       background: var(--card-bg);
       backdrop-filter: blur(10px);
@@ -111,7 +211,7 @@
     }
     .exp-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 30px var(--accent-glow);
+      box-shadow: 0 8px 32px var(--accent-glow);
       border-left-color: var(--accent);
     }
     .exp-card h5 { font-weight: 700; }
@@ -119,14 +219,16 @@
     .exp-card ul { padding-left: 1.2rem; }
     .exp-card li { margin-bottom: 0.35rem; }
 
+    /* ===== SKILL BADGES ===== */
     .badge-skill {
-      background: rgba(20, 184, 166, 0.13);
+      background: rgba(20, 184, 166, 0.12);
       color: var(--accent);
       font-size: 0.88rem;
       padding: 0.45em 0.8em;
       margin: 0.2rem;
       border-radius: 0.4rem;
       font-weight: 500;
+      display: inline-block;
       transition: background 0.2s, transform 0.2s;
     }
     .badge-skill:hover {
@@ -146,8 +248,8 @@
 
     footer {
       background: var(--footer-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: var(--muted);
       transition: background 0.4s;
     }
@@ -164,14 +266,25 @@
     @media (max-width: 576px) {
       .hero h1 { font-size: 2.2rem; }
       .hero h3 { font-size: 1.1rem; }
+      .blob { filter: blur(70px); }
     }
   </style>
 </head>
 
 <body>
 
-<div id="vanta-bg"></div>
+<!-- LAYER 1: GRADIENT MESH -->
+<div class="gradient-mesh" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
 
+<!-- LAYER 2: CYBER GRID -->
+<div class="cyber-grid" aria-hidden="true"></div>
+
+<!-- CONTENT -->
 <div id="content-wrapper">
 
   <nav class="navbar navbar-expand-lg sticky-top">
@@ -200,7 +313,7 @@
         <span id="typed-output"></span>
       </p>
       <p class="text-muted mt-2"><i class="bi bi-geo-alt"></i> King of Prussia, PA</p>
-      <a href="#about" class="btn btn-outline-light mt-3" style="border-color: var(--accent); color: var(--accent);">
+      <a href="#about" class="btn mt-3" style="border: 1px solid var(--accent); color: var(--accent);">
         <i class="bi bi-arrow-down-circle"></i> Explore
       </a>
     </div>
@@ -229,7 +342,8 @@
         <h5>Accenture <span class="fw-normal text-muted">&mdash; Manager, Threat &amp; Vulnerability Management</span></h5>
         <small class="text-muted">Feb 2019 &ndash; Present</small>
 
-        <h6>Financial Services Client &mdash; Security Configuration Management <small class="text-muted fw-normal">2024 &ndash; 2026</small></h6>
+        <h6>Financial Services Client &mdash; Security Configuration Management
+          <small class="text-muted fw-normal">2024 &ndash; 2026</small></h6>
         <ul>
           <li>Directed day-to-day operations of a 9-person blended team (client staff, contractors, MSSP resources), overseeing workload prioritization, performance, and delivery quality</li>
           <li>Managed a 5-person MSSP team directly, setting expectations, reviewing deliverables, and holding resources accountable to program SLAs and quality standards</li>
@@ -239,7 +353,8 @@
           <li>Identified and communicated risk posture to senior stakeholders, translating technical findings into actionable business risk guidance</li>
         </ul>
 
-        <h6>Utility Client &mdash; IT &amp; OT Vulnerability Management <small class="text-muted fw-normal">2020 &ndash; 2024</small></h6>
+        <h6>Utility Client &mdash; IT &amp; OT Vulnerability Management
+          <small class="text-muted fw-normal">2020 &ndash; 2024</small></h6>
         <ul>
           <li>Directed end-to-end VM program transformation across IT and OT environments, overseeing strategy, governance documentation, vendor vetting, and SLA enforcement</li>
           <li>Developed and implemented risk-based vulnerability prioritization methodology incorporating business context, asset criticality, and threat intelligence; reduced critical vulnerability backlog by 50%</li>
@@ -251,7 +366,8 @@
           <li>Grew strategic vendor relationships with Qualys, Wiz, and Brinqa to maximize product value and integration within the client environment</li>
         </ul>
 
-        <h6>Media &amp; Entertainment Client &mdash; Vulnerability Management Operations <small class="text-muted fw-normal">2019 &ndash; 2020</small></h6>
+        <h6>Media &amp; Entertainment Client &mdash; Vulnerability Management Operations
+          <small class="text-muted fw-normal">2019 &ndash; 2020</small></h6>
         <ul>
           <li>Analyzed and triaged a vulnerability landscape of 10M+ vulnerabilities using Qualys, identifying risk patterns and developing efficient remediation strategies to reduce exposure at scale</li>
           <li>Coordinated remediation efforts with operations teams, driving accountability and closure across a high-volume, fast-paced environment</li>
@@ -383,76 +499,49 @@
 
 </div>
 
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
 <script>
-  const THEMES = {
-    light: {
-      vanta: { color: 0x14b8a6, shininess: 35, waveHeight: 15, waveSpeed: 0.8, zoom: 0.85,
-               mouseControls: true, touchControls: true, gyroControls: false,
-               backgroundColor: 0xf8fafc },
-    },
-    dark: {
-      vanta: { color: 0x14b8a6, shininess: 50, waveHeight: 18, waveSpeed: 0.7, zoom: 0.85,
-               mouseControls: true, touchControls: true, gyroControls: false,
-               backgroundColor: 0x0f172a },
-    }
-  };
-
-  let vantaEffect = null;
-
-  function initVanta(theme) {
-    if (vantaEffect) vantaEffect.destroy();
-    vantaEffect = VANTA.WAVES({
-      el: "#vanta-bg",
-      ...THEMES[theme].vanta
-    });
-  }
-
   const html = document.documentElement;
   const toggle = document.getElementById("themeToggle");
-  const icon = document.getElementById("themeIcon");
+  const icon   = document.getElementById("themeIcon");
 
   function applyTheme(theme) {
     html.setAttribute("data-theme", theme);
     icon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars";
-    initVanta(theme);
   }
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
 
-  toggle.addEventListener("click", () => {
-    const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+  toggle.addEventListener("click", function () {
+    var next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
     applyTheme(next);
     localStorage.setItem("theme", next);
   });
 
   AOS.init({
     duration: 800,
-    easing: 'ease-out-cubic',
+    easing: "ease-out-cubic",
     once: true,
     offset: 80
   });
 
-  new Typed('#typed-output', {
+  new Typed("#typed-output", {
     strings: [
-      'Threat & Vulnerability Management',
-      'Risk Prioritization & Strategy',
-      'Cloud Security & Compliance',
-      'Enterprise Program Transformation'
+      "Threat & Vulnerability Management",
+      "Risk Prioritization & Strategy",
+      "Cloud Security & Compliance",
+      "Enterprise Program Transformation"
     ],
     typeSpeed: 45,
     backSpeed: 25,
     backDelay: 2000,
     loop: true,
     showCursor: true,
-    cursorChar: '|'
+    cursorChar: "|"
   });
 </script>
 
