@@ -9,276 +9,450 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <!-- AOS - Animate on Scroll -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
 
   <style>
     :root {
       --accent: #14b8a6;
+      --accent-glow: rgba(20, 184, 166, 0.35);
       --bg: #ffffff;
       --text: #111827;
       --muted: #6b7280;
-      --card: #f9fafb;
-      --card-border: #e5e7eb;
+      --card-bg: rgba(255, 255, 255, 0.82);
+      --card-border: rgba(229, 231, 235, 0.6);
+      --section-bg: rgba(255, 255, 255, 0.72);
+      --navbar-bg: rgba(255, 255, 255, 0.85);
+      --footer-bg: rgba(255, 255, 255, 0.8);
     }
 
     [data-theme="dark"] {
       --bg: #0f172a;
       --text: #e5e7eb;
       --muted: #9ca3af;
-      --card: #1e293b;
-      --card-border: #334155;
+      --card-bg: rgba(30, 41, 59, 0.82);
+      --card-border: rgba(51, 65, 85, 0.6);
+      --section-bg: rgba(15, 23, 42, 0.75);
+      --navbar-bg: rgba(15, 23, 42, 0.88);
+      --footer-bg: rgba(15, 23, 42, 0.85);
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background-color: var(--bg);
       color: var(--text);
-      transition: background-color 0.3s, color 0.3s;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      transition: color 0.4s;
+      overflow-x: hidden;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    #content-wrapper {
+      position: relative;
+      z-index: 1;
     }
 
     .accent { color: var(--accent); }
 
-    .bg-card {
-      background-color: var(--card);
-      border: 1px solid var(--card-border);
+    .navbar {
+      background: var(--navbar-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: background 0.4s;
     }
+    .navbar-brand { color: var(--text) !important; font-weight: 700; }
+    .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s; }
+    .nav-link:hover { opacity: 1; color: var(--accent) !important; }
+
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .hero h1 { font-size: 3.2rem; font-weight: 800; }
+    .hero h3 { color: var(--accent); font-weight: 600; }
+    .typed-cursor { color: var(--accent); }
+
+    .glass-section {
+      background: var(--section-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      padding: 4rem 0;
+      transition: background 0.4s;
+    }
+
+    .section-title {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      font-size: 1.8rem;
+    }
+
+    .exp-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid transparent;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .exp-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+      border-left-color: var(--accent);
+    }
+    .exp-card h5 { font-weight: 700; }
+    .exp-card h6 { font-weight: 600; margin-top: 1rem; }
+    .exp-card ul { padding-left: 1.2rem; }
+    .exp-card li { margin-bottom: 0.35rem; }
 
     .badge-skill {
-      background-color: rgba(20, 184, 166, 0.15);
+      background: rgba(20, 184, 166, 0.13);
       color: var(--accent);
-      font-size: 0.9rem;
-      padding: 0.4em 0.75em;
+      font-size: 0.88rem;
+      padding: 0.45em 0.8em;
       margin: 0.2rem;
+      border-radius: 0.4rem;
+      font-weight: 500;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .badge-skill:hover {
+      background: rgba(20, 184, 166, 0.28);
+      transform: scale(1.06);
     }
 
-    .navbar {
-      background-color: var(--bg);
-      transition: background-color 0.3s;
+    .cert-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0;
     }
-
-    .navbar-brand { color: var(--text) !important; }
-
-    footer { color: var(--muted); }
-    footer a { color: var(--accent); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    a.accent-link { color: var(--accent); text-decoration: none; }
-    a.accent-link:hover { text-decoration: underline; }
+    .cert-item i { font-size: 1.25rem; }
 
     .text-muted { color: var(--muted) !important; }
 
-    .card { border: none; }
+    footer {
+      background: var(--footer-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--muted);
+      transition: background 0.4s;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
-    section { border-bottom: 1px solid var(--card-border); }
-    section:last-of-type { border-bottom: none; }
+    #themeToggle {
+      border-color: var(--muted);
+      color: var(--text);
+      transition: color 0.3s, border-color 0.3s;
+    }
+    #themeToggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    @media (max-width: 576px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero h3 { font-size: 1.1rem; }
+    }
   </style>
 </head>
 
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg border-bottom sticky-top">
-  <div class="container">
-    <span class="navbar-brand fw-bold">Brooks Houck</span>
-    <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
-      <i class="bi bi-moon-stars" id="themeIcon"></i>
-    </button>
-  </div>
-</nav>
+<div id="vanta-bg"></div>
 
-<!-- Hero -->
-<header class="py-5 text-center">
-  <div class="container">
-    <h1 class="fw-bold">Brooks Houck</h1>
-    <h3 class="accent">Security Consulting Manager</h3>
-    <p class="lead text-muted">
-      Threat &amp; Vulnerability Management · Risk Prioritization · Cloud Security
-    </p>
-    <p class="text-muted"><i class="bi bi-geo-alt"></i> King of Prussia, PA</p>
-  </div>
-</header>
+<div id="content-wrapper">
 
-<!-- About -->
-<section class="py-4">
-  <div class="container">
-    <h2 class="accent mb-3">About</h2>
-    <p>
-      Cybersecurity manager with 8+ years of experience building and maturing enterprise
-      vulnerability management programs across cloud, on&#8209;premises, and OT/IT environments.
-      Proven track record directing blended teams, managing MSSP relationships, and
-      translating complex risk data into executive&#8209;level strategy. Deep hands&#8209;on
-      expertise with Qualys, Wiz, Brinqa, and AWS security services. Skilled at identifying,
-      classifying, and communicating risk to senior stakeholders, establishing audit&#8209;ready
-      governance frameworks, and driving measurable risk reduction at scale.
-    </p>
-  </div>
-</section>
-
-<!-- Experience -->
-<section class="py-4">
-  <div class="container">
-    <h2 class="accent mb-3">Experience</h2>
-
-    <!-- Accenture -->
-    <div class="card bg-card mb-3">
-      <div class="card-body">
-        <h5 class="fw-bold">Accenture <span class="fw-normal text-muted">— Manager, Threat &amp; Vulnerability Management</span></h5>
-        <small class="text-muted">Feb 2019 – Present</small>
-
-        <h6 class="mt-3 fw-bold">Financial Services Client — Security Configuration Management <small class="text-muted fw-normal">2024 – 2026</small></h6>
-        <ul>
-          <li>Directed day-to-day operations of a 9-person blended team (client staff, contractors, MSSP resources).</li>
-          <li>Managed a 5-person MSSP team, enforcing SLAs and quality standards.</li>
-          <li>Oversaw security configuration management across 75+ technologies aligned to CIS Benchmarks and STIGs.</li>
-          <li>Developed audit-ready documentation and repeatable governance processes.</li>
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Brooks Houck</a>
+      <div class="d-flex align-items-center gap-2">
+        <ul class="navbar-nav d-none d-lg-flex flex-row gap-3 me-3">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+          <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
+          <li class="nav-item"><a class="nav-link" href="#certifications">Certs</a></li>
+          <li class="nav-item"><a class="nav-link" href="#education">Education</a></li>
         </ul>
-
-        <h6 class="mt-3 fw-bold">Utility Client — IT &amp; OT Vulnerability Management <small class="text-muted fw-normal">2020 – 2024</small></h6>
-        <ul>
-          <li>Directed end-to-end VM program transformation across IT and OT environments.</li>
-          <li>Developed risk-based prioritization methodology; reduced critical vulnerability backlog by 50%.</li>
-          <li>Led migration to centralized repository integrating 7 data sources, 50,000+ assets, and 5M+ vulnerabilities.</li>
-          <li>Increased enterprise scan coverage by 30% through cross-platform gap analysis.</li>
-          <li>Identified $200K in unused licenses via consolidated data analysis.</li>
-        </ul>
-
-        <h6 class="mt-3 fw-bold">Media &amp; Entertainment Client — Vulnerability Management Operations <small class="text-muted fw-normal">2019 – 2020</small></h6>
-        <ul>
-          <li>Analyzed and triaged 10M+ vulnerabilities using Qualys at enterprise scale.</li>
-          <li>Designed formal escalation and exception management processes.</li>
-        </ul>
-
-        <h6 class="mt-3 fw-bold">Firm-Wide Initiatives</h6>
-        <ul>
-          <li>Led go-to-market development for HashiCorp Sentinel Policy as Code (CIS v4 for AWS).</li>
-          <li>Designed and delivered 8-week AWS Security Bootcamp; resulted in 3 additional analyst certifications.</li>
-        </ul>
+        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars" id="themeIcon"></i>
+        </button>
       </div>
     </div>
+  </nav>
 
-    <!-- Lockheed Martin -->
-    <div class="card bg-card mb-3">
-      <div class="card-body">
-        <h5 class="fw-bold">Lockheed Martin <span class="fw-normal text-muted">— System Security Engineer</span></h5>
-        <small class="text-muted">Jul 2017 – Feb 2019</small>
+  <header class="hero">
+    <div class="container" data-aos="fade-down" data-aos-duration="1000">
+      <h1>Brooks Houck</h1>
+      <h3>Security Consulting Manager</h3>
+      <p class="lead mt-3" style="color: var(--muted); min-height: 1.8rem;">
+        <span id="typed-output"></span>
+      </p>
+      <p class="text-muted mt-2"><i class="bi bi-geo-alt"></i> King of Prussia, PA</p>
+      <a href="#about" class="btn btn-outline-light mt-3" style="border-color: var(--accent); color: var(--accent);">
+        <i class="bi bi-arrow-down-circle"></i> Explore
+      </a>
+    </div>
+  </header>
+
+  <section id="about" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">About</h2>
+      <p style="font-size: 1.1rem; line-height: 1.75; max-width: 850px;">
+        Cybersecurity manager with 8+ years of experience building and maturing enterprise
+        vulnerability management programs across cloud, on&#8209;premises, and OT/IT environments.
+        Proven track record directing blended teams, managing MSSP relationships, and translating
+        complex risk data into executive&#8209;level strategy. Deep hands&#8209;on expertise with
+        Qualys, Wiz, Brinqa, and AWS security services. Skilled at identifying, classifying, and
+        communicating risk to senior stakeholders, establishing audit&#8209;ready governance
+        frameworks, and driving measurable risk reduction at scale.
+      </p>
+    </div>
+  </section>
+
+  <section id="experience" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Experience</h2>
+
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="100">
+        <h5>Accenture <span class="fw-normal text-muted">&mdash; Manager, Threat &amp; Vulnerability Management</span></h5>
+        <small class="text-muted">Feb 2019 &ndash; Present</small>
+
+        <h6>Financial Services Client &mdash; Security Configuration Management <small class="text-muted fw-normal">2024 &ndash; 2026</small></h6>
+        <ul>
+          <li>Directed day-to-day operations of a 9-person blended team (client staff, contractors, MSSP resources), overseeing workload prioritization, performance, and delivery quality</li>
+          <li>Managed a 5-person MSSP team directly, setting expectations, reviewing deliverables, and holding resources accountable to program SLAs and quality standards</li>
+          <li>Oversaw security configuration management across 75+ technologies, including Windows, Linux, network devices (firewalls, switches), and databases, implementing and maintaining policies aligned to CIS Benchmarks and STIGs</li>
+          <li>Managed full policy lifecycle for all in-scope technologies, tracking CIS and STIG benchmark updates and coordinating team-wide implementation of revised controls</li>
+          <li>Developed audit-ready documentation for reporting procedures, establishing repeatable processes that met compliance and governance requirements</li>
+          <li>Identified and communicated risk posture to senior stakeholders, translating technical findings into actionable business risk guidance</li>
+        </ul>
+
+        <h6>Utility Client &mdash; IT &amp; OT Vulnerability Management <small class="text-muted fw-normal">2020 &ndash; 2024</small></h6>
+        <ul>
+          <li>Directed end-to-end VM program transformation across IT and OT environments, overseeing strategy, governance documentation, vendor vetting, and SLA enforcement</li>
+          <li>Developed and implemented risk-based vulnerability prioritization methodology incorporating business context, asset criticality, and threat intelligence; reduced critical vulnerability backlog by 50%</li>
+          <li>Applied CVSS scoring and contextual business impact analysis to classify and prioritize risk, enabling operations teams to focus on organizational-critical threats</li>
+          <li>Led migration to centralized vulnerability repository, integrating 7 data sources and consolidating 50,000+ assets and 5M+ vulnerabilities using Python and Bash API integrations</li>
+          <li>Established and tracked KPIs (MTTR, TTL, exploitable vulnerabilities), enabling data-driven remediation accountability across operations teams</li>
+          <li>Increased enterprise scan coverage by 30% by identifying previously unknown gaps through cross-platform report analysis</li>
+          <li>Identified $200K in unused application licenses within a single quarter through consolidated personnel and ownership data analysis</li>
+          <li>Grew strategic vendor relationships with Qualys, Wiz, and Brinqa to maximize product value and integration within the client environment</li>
+        </ul>
+
+        <h6>Media &amp; Entertainment Client &mdash; Vulnerability Management Operations <small class="text-muted fw-normal">2019 &ndash; 2020</small></h6>
+        <ul>
+          <li>Analyzed and triaged a vulnerability landscape of 10M+ vulnerabilities using Qualys, identifying risk patterns and developing efficient remediation strategies to reduce exposure at scale</li>
+          <li>Coordinated remediation efforts with operations teams, driving accountability and closure across a high-volume, fast-paced environment</li>
+          <li>Designed and implemented a formal escalation process to surface high-risk, unresolved vulnerabilities to appropriate stakeholders for timely action</li>
+          <li>Established an exception management process, enabling structured risk acceptance decisions with documented justification and defined review cycles</li>
+        </ul>
+
+        <h6>Firm-Wide Initiatives</h6>
+        <ul>
+          <li>Led go-to-market capability development for HashiCorp Sentinel Policy as Code, authoring CIS Benchmark (v4) policies for AWS assets, covering VPCs, IAM, and S3</li>
+          <li>Designed and delivered 8-week AWS Security Bootcamp; hands-on labs covering IAM, EC2, KMS, AWS Config, and Systems Manager, resulting in 3 additional analyst certifications</li>
+        </ul>
+      </div>
+
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="200">
+        <h5>Lockheed Martin <span class="fw-normal text-muted">&mdash; System Security Engineer</span></h5>
+        <small class="text-muted">Jul 2017 &ndash; Feb 2019</small>
         <ul class="mt-2">
-          <li>Supported vulnerability and compliance management for a 2,000+ asset environment.</li>
-          <li>Contributed to AWS GovCloud audit readiness and NIST CSF compliance across the SDLC.</li>
+          <li>Identified OS and application vulnerabilities and compliance gaps; generated and distributed prioritized reports to remediation teams and executive leadership</li>
+          <li>Helped establish program policies and procedures to accelerate vulnerability identification and remediation lifecycle</li>
+          <li>Participated in greenfield AWS GovCloud audit program, partnering with developers to validate NIST CSF control compliance across the SDLC</li>
         </ul>
       </div>
-    </div>
 
-    <!-- USAF -->
-    <div class="card bg-card">
-      <div class="card-body">
-        <h5 class="fw-bold">U.S. Air Force <span class="fw-normal text-muted">— Aircraft Maintenance Technician</span></h5>
-        <small class="text-muted">Nov 2008 – Apr 2016</small>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="300">
+        <h5>U.S. Air Force <span class="fw-normal text-muted">&mdash; Aircraft Maintenance Technician</span></h5>
+        <small class="text-muted">Nov 2008 &ndash; Apr 2016</small>
         <ul class="mt-2">
-          <li>Performed Low Observable structural maintenance on advanced military aircraft.</li>
-          <li>Coordinated large-scale maintenance scheduling aligned to USAF modernization priorities.</li>
+          <li>Performed Low Observable structural maintenance (composite and metal repairs) on advanced military aircraft</li>
+          <li>Coordinated maintenance scheduling for thousands of vehicles in alignment with USAF aircraft modernization priorities</li>
         </ul>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Skills -->
-<section class="py-4">
-  <div class="container">
-    <h2 class="accent mb-3">Skills</h2>
+  <section id="skills" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">Skills</h2>
 
-    <h6 class="fw-bold">Vulnerability Management Tools</h6>
-    <div class="mb-3">
-      <span class="badge badge-skill">Qualys</span>
-      <span class="badge badge-skill">Wiz</span>
-      <span class="badge badge-skill">Brinqa</span>
-      <span class="badge badge-skill">AWS Native Scanning</span>
+      <h6 class="fw-bold mt-3">Vulnerability Management Tools</h6>
+      <div class="mb-3">
+        <span class="badge badge-skill">Qualys</span>
+        <span class="badge badge-skill">Wiz</span>
+        <span class="badge badge-skill">Brinqa</span>
+        <span class="badge badge-skill">AWS Native Scanning</span>
+      </div>
+
+      <h6 class="fw-bold">Cloud Platforms</h6>
+      <div class="mb-3">
+        <span class="badge badge-skill">AWS IAM</span>
+        <span class="badge badge-skill">KMS</span>
+        <span class="badge badge-skill">Config</span>
+        <span class="badge badge-skill">Security Hub</span>
+        <span class="badge badge-skill">EC2</span>
+        <span class="badge badge-skill">S3</span>
+        <span class="badge badge-skill">VPC</span>
+        <span class="badge badge-skill">Systems Manager</span>
+      </div>
+
+      <h6 class="fw-bold">Risk Frameworks</h6>
+      <div class="mb-3">
+        <span class="badge badge-skill">NIST CSF</span>
+        <span class="badge badge-skill">NIST 800-53</span>
+        <span class="badge badge-skill">ISO 27001</span>
+        <span class="badge badge-skill">CVSS v3/v4</span>
+        <span class="badge badge-skill">CIS Benchmarks</span>
+        <span class="badge badge-skill">DISA STIGs</span>
+      </div>
+
+      <h6 class="fw-bold">Languages &amp; Automation</h6>
+      <div class="mb-3">
+        <span class="badge badge-skill">Python</span>
+        <span class="badge badge-skill">Bash</span>
+        <span class="badge badge-skill">Terraform</span>
+        <span class="badge badge-skill">Vault</span>
+        <span class="badge badge-skill">Sentinel Policy as Code</span>
+      </div>
+
+      <h6 class="fw-bold">Security Domains</h6>
+      <div class="mb-3">
+        <span class="badge badge-skill">Vulnerability Prioritization</span>
+        <span class="badge badge-skill">Risk Classification</span>
+        <span class="badge badge-skill">MSSP Management</span>
+        <span class="badge badge-skill">SLA Governance</span>
+        <span class="badge badge-skill">Executive Risk Reporting</span>
+        <span class="badge badge-skill">Network Security</span>
+        <span class="badge badge-skill">Data Encryption</span>
+        <span class="badge badge-skill">Access Control</span>
+      </div>
     </div>
+  </section>
 
-    <h6 class="fw-bold">Cloud Platforms</h6>
-    <div class="mb-3">
-      <span class="badge badge-skill">AWS IAM</span>
-      <span class="badge badge-skill">KMS</span>
-      <span class="badge badge-skill">Config</span>
-      <span class="badge badge-skill">Security Hub</span>
-      <span class="badge badge-skill">EC2</span>
-      <span class="badge badge-skill">S3</span>
-      <span class="badge badge-skill">VPC</span>
-      <span class="badge badge-skill">Systems Manager</span>
+  <section id="certifications" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">Certifications</h2>
+      <div class="cert-item">
+        <i class="bi bi-patch-check-fill accent"></i>
+        <span>AWS Solutions Architect &ndash; Associate</span>
+      </div>
+      <div class="cert-item">
+        <i class="bi bi-patch-check-fill accent"></i>
+        <span>AWS Certified Security &ndash; Specialty</span>
+      </div>
     </div>
+  </section>
 
-    <h6 class="fw-bold">Risk Frameworks</h6>
-    <div class="mb-3">
-      <span class="badge badge-skill">NIST CSF</span>
-      <span class="badge badge-skill">NIST 800-53</span>
-      <span class="badge badge-skill">ISO 27001</span>
-      <span class="badge badge-skill">CVSS v3/v4</span>
-      <span class="badge badge-skill">CIS Benchmarks</span>
-      <span class="badge badge-skill">DISA STIGs</span>
+  <section id="education" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">Education</h2>
+      <p style="font-size: 1.1rem;">
+        <strong>B.S., Cybersecurity</strong> &mdash; University of Maryland
+        <span class="text-muted">(2017)</span>
+      </p>
     </div>
+  </section>
 
-    <h6 class="fw-bold">Languages &amp; Automation</h6>
-    <div class="mb-3">
-      <span class="badge badge-skill">Python</span>
-      <span class="badge badge-skill">Bash</span>
-      <span class="badge badge-skill">Terraform</span>
-      <span class="badge badge-skill">Vault</span>
-      <span class="badge badge-skill">Sentinel Policy as Code</span>
+  <footer class="py-4 text-center">
+    <div class="container">
+      <p class="mb-1">
+        <a href="mailto:brooks.houck@gmail.com"><i class="bi bi-envelope-fill"></i> Email</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://www.linkedin.com/in/brooks-houck-5651328b/" target="_blank" rel="noopener">
+          <i class="bi bi-linkedin"></i> LinkedIn
+        </a>
+      </p>
+      <small>&copy; 2026 Brooks Houck. All rights reserved.</small>
     </div>
-  </div>
-</section>
+  </footer>
 
-<!-- Certifications -->
-<section class="py-4">
-  <div class="container">
-    <h2 class="accent mb-3">Certifications</h2>
-    <ul>
-      <li><i class="bi bi-patch-check-fill accent"></i> AWS Solutions Architect – Associate</li>
-      <li><i class="bi bi-patch-check-fill accent"></i> AWS Certified Security – Specialty</li>
-    </ul>
-  </div>
-</section>
+</div>
 
-<!-- Education -->
-<section class="py-4">
-  <div class="container">
-    <h2 class="accent mb-3">Education</h2>
-    <p><strong>B.S., Cybersecurity</strong> — University of Maryland <span class="text-muted">(2017)</span></p>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer class="py-4 border-top text-center">
-  <div class="container">
-    <p>
-      <a href="mailto:brooks.houck@gmail.com"><i class="bi bi-envelope"></i> Email</a>
-      &nbsp;·&nbsp;
-      <a href="https://www.linkedin.com/in/brooks-houck-5651328b/" target="_blank"><i class="bi bi-linkedin"></i> LinkedIn</a>
-    </p>
-    <small>&copy; 2026 Brooks Houck</small>
-  </div>
-</footer>
-
-<!-- Bootstrap JS -->
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
-<!-- Theme Toggle -->
 <script>
+  const THEMES = {
+    light: {
+      vanta: { color: 0x14b8a6, shininess: 35, waveHeight: 15, waveSpeed: 0.8, zoom: 0.85,
+               mouseControls: true, touchControls: true, gyroControls: false,
+               backgroundColor: 0xf8fafc },
+    },
+    dark: {
+      vanta: { color: 0x14b8a6, shininess: 50, waveHeight: 18, waveSpeed: 0.7, zoom: 0.85,
+               mouseControls: true, touchControls: true, gyroControls: false,
+               backgroundColor: 0x0f172a },
+    }
+  };
+
+  let vantaEffect = null;
+
+  function initVanta(theme) {
+    if (vantaEffect) vantaEffect.destroy();
+    vantaEffect = VANTA.WAVES({
+      el: "#vanta-bg",
+      ...THEMES[theme].vanta
+    });
+  }
+
+  const html = document.documentElement;
   const toggle = document.getElementById("themeToggle");
   const icon = document.getElementById("themeIcon");
-  const html = document.documentElement;
 
   function applyTheme(theme) {
     html.setAttribute("data-theme", theme);
-    icon.className = theme === "dark" ? "bi bi-sun" : "bi bi-moon-stars";
+    icon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars";
+    initVanta(theme);
   }
 
-  const saved = localStorage.getItem("theme") || "light";
-  applyTheme(saved);
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
 
   toggle.addEventListener("click", () => {
     const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
     applyTheme(next);
     localStorage.setItem("theme", next);
+  });
+
+  AOS.init({
+    duration: 800,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 80
+  });
+
+  new Typed('#typed-output', {
+    strings: [
+      'Threat & Vulnerability Management',
+      'Risk Prioritization & Strategy',
+      'Cloud Security & Compliance',
+      'Enterprise Program Transformation'
+    ],
+    typeSpeed: 45,
+    backSpeed: 25,
+    backDelay: 2000,
+    loop: true,
+    showCursor: true,
+    cursorChar: '|'
   });
 </script>
 
