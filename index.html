@@ -161,6 +161,23 @@
     .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s, color 0.2s; }
     .nav-link:hover { opacity: 1; color: var(--accent) !important; }
 
+    /* Mobile nav drawer */
+    .navbar-collapse {
+      background: var(--navbar-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--card-border);
+      margin: 0 -12px;
+      padding: 0.5rem 1rem 1rem;
+    }
+    @media (min-width: 992px) {
+      .navbar-collapse { background: transparent; border-top: none; margin: 0; padding: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
+    .navbar-collapse .nav-link { padding: 0.55rem 0.25rem; }
+    .navbar-toggler { border-color: var(--card-border); color: var(--text); }
+    .navbar-toggler-icon { filter: none; }
+    [data-theme="dark"] .navbar-toggler { border-color: var(--card-border); }
+
     .hero {
       min-height: 92vh;
       display: flex;
@@ -276,16 +293,22 @@
     <div class="container">
       <a class="navbar-brand" href="#">Brooks Houck</a>
       <div class="d-flex align-items-center gap-2">
-        <ul class="navbar-nav d-none d-lg-flex flex-row gap-3 me-3">
+        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars" id="themeIcon"></i>
+        </button>
+        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="bi bi-list fs-5" style="color: var(--text);"></i>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="mobileNav">
+        <ul class="navbar-nav ms-auto flex-lg-row gap-lg-3 mt-1 mt-lg-0">
           <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
           <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
           <li class="nav-item"><a class="nav-link" href="#certifications">Certs</a></li>
           <li class="nav-item"><a class="nav-link" href="#education">Education</a></li>
+          <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
         </ul>
-        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
-          <i class="bi bi-moon-stars" id="themeIcon"></i>
-        </button>
       </div>
     </div>
   </nav>
@@ -472,12 +495,128 @@
     </div>
   </section>
 
+  <section id="projects" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">Projects</h2>
+
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h5>SpookyDecs <span class="fw-normal text-muted">&mdash; Holiday Decoration Management Application</span></h5>
+            <small class="text-muted">
+              Personal Project &nbsp;&middot;&nbsp;
+              <a href="https://github.com/james-cole2015/spookydecs" target="_blank" rel="noopener" style="color: var(--accent);">
+                <i class="bi bi-github"></i> View on GitHub
+              </a>
+            </small>
+          </div>
+        </div>
+
+        <p class="mt-3" style="font-size: 0.97rem; line-height: 1.75;">
+          A full-lifecycle decoration management platform covering inventory tracking, maintenance scheduling,
+          idea management, and AI-assisted workflows — built end-to-end on a serverless AWS stack with no
+          third-party application framework.
+        </p>
+
+        <h6>AI &amp; Agent Features</h6>
+        <ul>
+          <li>Designed and built <strong>Iris</strong>, an NLP-driven AI agent powered by AWS Bedrock (Anthropic Claude) with a custom multi-step tool-use loop — enabling users to query inventory, log maintenance, and manage items via natural language</li>
+          <li>Implemented multimodal vector search using <strong>Cohere Embed v4</strong> and Amazon Titan Embed Text v2, supporting semantic photo tagging and AI-assisted item discovery across catalog images stored in S3</li>
+          <li>Integrated cost tracking and automated financial summaries as AI-assisted features surfaced through the Iris agent interface</li>
+        </ul>
+
+        <h6>Architecture &amp; Engineering</h6>
+        <ul>
+          <li>Architected a 15-subdomain frontend (Vite build system, vanilla JS) with each subdomain independently deployed to S3 + CloudFront — covering inventory, gallery, tracker, ideas, workbench, and more</li>
+          <li>Built a Python 3.12 serverless backend composed of discrete AWS Lambda functions behind API Gateway, with a shared Lambda Layer for shared utilities</li>
+          <li>Implemented an event-driven architecture using SQS consumer patterns to decouple inventory writes from downstream side effects such as search indexing, cost calculation, and maintenance triggers</li>
+          <li>Engineered a rules-based <em>Inspector</em> subsystem for data quality — covering field validation, duplicate detection, and entity relationship integrity across the item catalog</li>
+          <li>Secured the platform with AWS Cognito including a Pre-Token Generation trigger that injects custom role and environment claims for fine-grained access control</li>
+          <li>Established GitHub Actions + AWS CodeBuild CI/CD pipelines using OIDC-based authentication for zero-credential deployments across all Lambda functions and frontend subdomains</li>
+        </ul>
+
+        <div class="mt-3">
+          <span class="badge badge-skill">AWS Lambda</span>
+          <span class="badge badge-skill">API Gateway</span>
+          <span class="badge badge-skill">DynamoDB</span>
+          <span class="badge badge-skill">AWS Bedrock</span>
+          <span class="badge badge-skill">Anthropic Claude</span>
+          <span class="badge badge-skill">Cohere Embed v4</span>
+          <span class="badge badge-skill">Vector Search</span>
+          <span class="badge badge-skill">S3 &amp; CloudFront</span>
+          <span class="badge badge-skill">SQS</span>
+          <span class="badge badge-skill">Cognito</span>
+          <span class="badge badge-skill">Python</span>
+          <span class="badge badge-skill">Vite</span>
+          <span class="badge badge-skill">GitHub Actions</span>
+          <span class="badge badge-skill">AWS CodeBuild</span>
+        </div>
+      </div>
+
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h5>Patch Gap Analyzer <span class="fw-normal text-muted">&mdash; Manual Security Assessment Tool</span></h5>
+            <small class="text-muted">
+              Personal Project &nbsp;&middot;&nbsp;
+              <a href="https://github.com/james-cole2015/manual_assessment_tool" target="_blank" rel="noopener" style="color: var(--accent);">
+                <i class="bi bi-github"></i> View on GitHub
+              </a>
+            </small>
+          </div>
+        </div>
+
+        <p class="mt-3" style="font-size: 0.97rem; line-height: 1.75;">
+          A local web application for security assessors performing manual compliance and vulnerability assessments
+          in air-gapped or semi-connected environments. Identifies unpatched CVEs and configuration control failures
+          across Windows and Linux assets by comparing observed system state against authoritative advisory and benchmark data —
+          with no cloud dependency required on-site.
+        </p>
+
+        <h6>Assessment Pipelines</h6>
+        <ul>
+          <li><strong>Windows Patch Assessment</strong> — ingests Microsoft MSRC CVRF data pre-engagement; on-site, the assessor enters a host's Update Build Revision (UBR) and the tool identifies every missing cumulative update KB and its associated CVEs, including supersedence tracking. Supports 14 Windows targets from Server 2008 R2 through Server 2025</li>
+          <li><strong>Linux Patch Assessment</strong> — pulls advisory data from Debian Security Tracker, Ubuntu Canonical OVAL, and Red Hat OVAL v2; generates a collection script requiring no admin rights or internet access on the target; normalizes all three upstream formats into a unified schema for analysis across 20+ distro versions</li>
+          <li><strong>CIS Benchmark Configuration Assessment</strong> — parses CIS benchmark XLSX files, generates a pre-populated assessment checklist filtered by profile and Implementation Group, and processes the completed checklist into structured findings</li>
+        </ul>
+
+        <h6>Technical Highlights</h6>
+        <ul>
+          <li>Implemented from-scratch <strong>dpkg and RPM version comparison algorithms</strong> per their respective specs, enabling accurate patch gap analysis without requiring native package bindings on the assessment machine</li>
+          <li>Exports findings as <strong>NIST OSCAL 1.1.2 POA&amp;M documents</strong> (JSON, XML, CSV, HTML) with CVSS-derived completion dates computed from a configurable risk policy table — aligned to federal compliance reporting requirements</li>
+          <li>Enriches advisory data with <strong>NVD CVSS scores</strong> via the NIST NVD API, normalizing severity labels from distros that don't publish numeric scores</li>
+          <li>Uses <strong>Server-Sent Events (SSE)</strong> to stream live progress during long-running advisory pulls (2–10+ minutes), avoiding HTTP timeouts without polling</li>
+          <li>Implements a custom server-side session store keyed by UUID cookie — bypassing Flask's cookie-size limit and ensuring no assessed asset data is ever written to disk; server auto-wipes all session data after 2 hours of inactivity</li>
+          <li>Two-phase offline workflow: internet-required pre-engagement data pull, then fully air-gapped on-site execution — the entire project folder is self-contained and portable</li>
+        </ul>
+
+        <div class="mt-3">
+          <span class="badge badge-skill">Python</span>
+          <span class="badge badge-skill">Flask</span>
+          <span class="badge badge-skill">OSCAL 1.1.2</span>
+          <span class="badge badge-skill">NIST NVD API</span>
+          <span class="badge badge-skill">MSRC CVRF API</span>
+          <span class="badge badge-skill">CIS Benchmarks</span>
+          <span class="badge badge-skill">CVSS</span>
+          <span class="badge badge-skill">Server-Sent Events</span>
+          <span class="badge badge-skill">openpyxl</span>
+          <span class="badge badge-skill">Air-Gapped Deployment</span>
+          <span class="badge badge-skill">Debian / Ubuntu / RHEL</span>
+          <span class="badge badge-skill">Windows Patch Analysis</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <footer class="py-4 text-center">
     <div class="container">
       <p class="mb-1">
         <a href="mailto:brooks.houck@gmail.com"><i class="bi bi-envelope-fill"></i> Email</a>
         &nbsp;&middot;&nbsp;
         <a href="https://www.linkedin.com/in/brooks-houck-5651328b/" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i> LinkedIn</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://github.com/james-cole2015" target="_blank" rel="noopener"><i class="bi bi-github"></i> GitHub</a>
       </p>
       <small>&copy; 2026 Brooks Houck. All rights reserved.</small>
     </div>
@@ -506,6 +645,14 @@
     var next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
     applyTheme(next);
     localStorage.setItem("theme", next);
+  });
+
+  // Close mobile nav when any nav link is tapped
+  document.querySelectorAll('#mobileNav .nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      var collapse = bootstrap.Collapse.getInstance(document.getElementById('mobileNav'));
+      if (collapse) collapse.hide();
+    });
   });
 
   AOS.init({
