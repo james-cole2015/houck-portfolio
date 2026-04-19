@@ -268,6 +268,26 @@
     }
     #themeToggle:hover { border-color: var(--accent); color: var(--accent); }
 
+    .spec-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3em 0.75em;
+      border-radius: 999px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .spec-status.active {
+      background: rgba(20, 184, 166, 0.18);
+      color: var(--accent);
+      border: 1px solid rgba(20, 184, 166, 0.4);
+    }
+    .spec-status.planned {
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
     @media (max-width: 576px) {
       .hero h1 { font-size: 2.2rem; }
       .hero h3 { font-size: 1.1rem; }
@@ -308,6 +328,7 @@
           <li class="nav-item"><a class="nav-link" href="#certifications">Certs</a></li>
           <li class="nav-item"><a class="nav-link" href="#education">Education</a></li>
           <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="#specialization">Specialization</a></li>
         </ul>
       </div>
     </div>
@@ -442,7 +463,6 @@
       <div class="mb-3">
         <span class="badge badge-skill">NIST CSF</span>
         <span class="badge badge-skill">NIST 800-53</span>
-        <span class="badge badge-skill">ISO 27001</span>
         <span class="badge badge-skill">CVSS v3/v4</span>
         <span class="badge badge-skill">CIS Benchmarks</span>
         <span class="badge badge-skill">DISA STIGs</span>
@@ -603,6 +623,65 @@
           <span class="badge badge-skill">Air-Gapped Deployment</span>
           <span class="badge badge-skill">Debian / Ubuntu / RHEL</span>
           <span class="badge badge-skill">Windows Patch Analysis</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="specialization" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">Building Specialization</h2>
+
+      <div class="mb-5">
+        <p class="fw-semibold mb-3" style="color: var(--accent); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;">
+          <i class="bi bi-diagram-3 me-1"></i> AI Governance Track
+        </p>
+        <div class="row g-3">
+
+          <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="exp-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0 fw-bold">NIST AI Risk Management Framework</h6>
+                <span class="spec-status active ms-2">Active</span>
+              </div>
+              <p class="text-muted mb-2" style="font-size: 0.9rem;">NIST AI RMF 1.0</p>
+              <p style="font-size: 0.92rem; line-height: 1.65;">
+                Studying the Govern, Map, Measure, and Manage functions — with focus on how AI RMF
+                complements existing NIST CSF and 800-53 risk practices I apply in enterprise engagements.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="exp-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0 fw-bold">AWS Certified AI Practitioner</h6>
+                <span class="spec-status active ms-2">In Progress</span>
+              </div>
+              <p class="text-muted mb-2" style="font-size: 0.9rem;">Amazon Web Services</p>
+              <p style="font-size: 0.92rem; line-height: 1.65;">
+                Formalizing hands-on AI experience — already building with Bedrock, Claude, and vector
+                search in <a href="#projects" style="color: var(--accent);">SpookyDecs</a> — into a
+                structured understanding of AWS AI services, responsible AI, and governance considerations.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="exp-card h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0 fw-bold">AI Governance Professional</h6>
+                <span class="spec-status planned ms-2">Target</span>
+              </div>
+              <p class="text-muted mb-2" style="font-size: 0.9rem;">AIGP &mdash; IAPP</p>
+              <p style="font-size: 0.92rem; line-height: 1.65;">
+                Target credential that formalizes the intersection of AI policy, risk frameworks, and
+                organizational governance — the culmination of this specialization path.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
 
