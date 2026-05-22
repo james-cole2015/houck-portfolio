@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Field Assessment Console | Brooks Houck</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+
+  <style>
+    :root {
+      --accent: #14b8a6;
+      --accent-glow: rgba(20, 184, 166, 0.35);
+      --text: #111827;
+      --muted: #6b7280;
+      --card-bg: rgba(255, 255, 255, 0.45);
+      --card-border: rgba(229, 231, 235, 0.35);
+      --section-bg: rgba(255, 255, 255, 0.35);
+      --navbar-bg: rgba(255, 255, 255, 0.55);
+      --footer-bg: rgba(255, 255, 255, 0.45);
+      --blob1: rgba(20, 184, 166, 0.38);
+      --blob2: rgba(59, 130, 246, 0.33);
+      --blob3: rgba(124, 58, 237, 0.26);
+      --blob4: rgba(30, 41, 59, 0.18);
+      --mesh-base: #f8fafc;
+      --grid-color: rgba(100, 116, 139, 0.05);
+      --scan-color: rgba(20, 184, 166, 0.035);
+    }
+
+    [data-theme="dark"] {
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card-bg: rgba(30, 41, 59, 0.50);
+      --card-border: rgba(51, 65, 85, 0.35);
+      --section-bg: rgba(15, 23, 42, 0.40);
+      --navbar-bg: rgba(15, 23, 42, 0.60);
+      --footer-bg: rgba(15, 23, 42, 0.50);
+      --blob1: rgba(20, 184, 166, 0.45);
+      --blob2: rgba(59, 130, 246, 0.40);
+      --blob3: rgba(124, 58, 237, 0.33);
+      --blob4: rgba(30, 41, 59, 0.30);
+      --mesh-base: #0f172a;
+      --grid-color: rgba(148, 163, 184, 0.07);
+      --scan-color: rgba(20, 184, 166, 0.045);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      transition: color 0.4s;
+      overflow-x: hidden;
+    }
+
+    /* === Background === */
+    .gradient-mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background-color: var(--mesh-base);
+      overflow: hidden; transition: background-color 0.6s;
+    }
+    .gradient-mesh .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); mix-blend-mode: screen;
+      will-change: transform; transition: background 0.6s;
+    }
+    [data-theme="dark"] .gradient-mesh .blob { mix-blend-mode: lighten; }
+    .blob-1 { width: 65vmax; height: 65vmax; background: var(--blob1); top: -18%; left: -12%; animation: drift1 20s ease-in-out infinite alternate; }
+    .blob-2 { width: 58vmax; height: 58vmax; background: var(--blob2); top: 35%; right: -18%; animation: drift2 25s ease-in-out infinite alternate; }
+    .blob-3 { width: 52vmax; height: 52vmax; background: var(--blob3); bottom: -12%; left: 20%; animation: drift3 18s ease-in-out infinite alternate; }
+    .blob-4 { width: 48vmax; height: 48vmax; background: var(--blob4); top: 15%; left: 45%; animation: drift4 22s ease-in-out infinite alternate; }
+    @keyframes drift1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(12vw,18vh) scale(1.15); } }
+    @keyframes drift2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-14vw,-12vh) scale(1.1); } }
+    @keyframes drift3 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(10vw,-15vh) scale(1.2); } }
+    @keyframes drift4 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-8vw,10vh) scale(1.08); } }
+
+    .cyber-grid {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg,  var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px),
+        repeating-linear-gradient(90deg, var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px);
+      background-size: 44px 44px;
+    }
+    .cyber-grid::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 120px;
+      background: linear-gradient(180deg, transparent, var(--scan-color), transparent);
+      animation: scanline 9s linear infinite;
+    }
+    @keyframes scanline { 0% { top: -120px; } 100% { top: 100%; } }
+
+    #content-wrapper { position: relative; z-index: 2; }
+
+    /* === Navbar === */
+    .accent { color: var(--accent); }
+    .navbar {
+      background: var(--navbar-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      transition: background 0.4s;
+    }
+    .navbar-brand { color: var(--text) !important; font-weight: 700; }
+    .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s, color 0.2s; }
+    .nav-link:hover { opacity: 1; color: var(--accent) !important; }
+    #themeToggle { border-color: var(--muted); color: var(--text); transition: color 0.3s, border-color 0.3s; }
+    #themeToggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* === Hero === */
+    .fac-hero {
+      min-height: 58vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 4rem 0 3rem;
+    }
+    .fac-hero h1 { font-size: 2.8rem; font-weight: 800; }
+    .fac-hero .subtitle { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin-top: 0.6rem; }
+    .fac-hero .description {
+      color: var(--muted); max-width: 680px; margin: 1rem auto 0;
+      font-size: 1.02rem; line-height: 1.78;
+    }
+
+    /* === Sections === */
+    .glass-section {
+      background: var(--section-bg);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      padding: 4rem 0; transition: background 0.4s;
+    }
+    .section-title { font-weight: 700; margin-bottom: 0.6rem; color: var(--accent); font-size: 1.8rem; }
+    .section-subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 1rem; max-width: 750px; }
+
+    /* === Problem Grid === */
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .problem-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem; padding: 1.4rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .problem-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .problem-card .problem-icon { font-size: 1.6rem; color: var(--accent); display: block; margin-bottom: 0.7rem; }
+    .problem-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .problem-card p { font-size: 0.92rem; color: var(--muted); margin-bottom: 0; line-height: 1.65; }
+
+    /* === Workflow SVG === */
+    .workflow-wrapper { overflow-x: auto; padding: 0.5rem 0 1rem; }
+    .workflow-svg { display: block; width: 100%; min-width: 640px; }
+    .wf-box  { fill: var(--card-bg); stroke: var(--accent); stroke-width: 1.5; }
+    .wf-badge-bg { fill: rgba(20,184,166,0.15); }
+    .wf-badge-text {
+      fill: var(--accent); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.1em; font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .wf-title {
+      fill: var(--accent); font-size: 12.5px; font-weight: 700;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .wf-item { fill: var(--text); font-size: 11px; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .wf-arrow   { stroke: var(--accent); stroke-width: 2; fill: none; }
+    .wf-arrowhead { fill: var(--accent); }
+    .wf-divider { stroke: var(--card-border); stroke-width: 1; }
+
+    .collection-note {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-left: 4px solid var(--accent);
+      border-radius: 0.5rem; padding: 0.9rem 1.2rem;
+      font-size: 0.92rem; color: var(--muted);
+    }
+    .collection-note strong { color: var(--text); }
+
+    /* === Pipeline Grid === */
+    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.1rem; }
+    .pipeline-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-top: 3px solid var(--accent);
+      border-radius: 0.75rem; padding: 1.3rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .pipeline-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px var(--accent-glow); }
+    .pipeline-card .pipeline-icon { font-size: 1.75rem; color: var(--accent); display: block; margin-bottom: 0.6rem; }
+    .pipeline-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .pipeline-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+
+    /* === Reporting === */
+    .reporting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .reporting-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem; padding: 1.5rem;
+    }
+    .reporting-card h6 { font-weight: 700; color: var(--accent); margin-bottom: 1rem; font-size: 1rem; }
+    .format-item {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--card-border);
+    }
+    .format-item:last-child { border-bottom: none; }
+    .format-item i { font-size: 1.05rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .format-item .format-name { font-weight: 600; font-size: 0.9rem; }
+    .format-item .format-desc { font-size: 0.84rem; color: var(--muted); }
+    .poam-item {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--card-border);
+    }
+    .poam-item:last-child { border-bottom: none; }
+    .poam-item i { font-size: 1rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .poam-item span { font-size: 0.9rem; line-height: 1.55; }
+
+    /* === AI Grid === */
+    .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    .ai-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-left: 4px solid var(--accent);
+      border-radius: 0.75rem; padding: 1.4rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .ai-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .ai-card .ai-icon { font-size: 1.6rem; color: var(--accent); display: block; margin-bottom: 0.65rem; }
+    .ai-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .ai-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+    .ai-note { font-size: 0.82rem; color: var(--accent); margin-top: 0.6rem; font-style: italic; }
+
+    /* === Highlight Grid === */
+    .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .highlight-item {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem;
+      padding: 1.4rem; text-align: center;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .highlight-item:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .highlight-stat { font-size: 1.6rem; font-weight: 800; color: var(--accent); display: block; }
+    .highlight-label { font-size: 0.84rem; color: var(--muted); display: block; margin-top: 0.3rem; line-height: 1.45; }
+
+    /* === What's Next === */
+    .next-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .next-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px dashed var(--card-border); border-radius: 0.75rem; padding: 1.5rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .next-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .next-badge {
+      display: inline-block; font-size: 0.74rem; font-weight: 600;
+      background: rgba(20,184,166,0.12); color: var(--accent);
+      padding: 0.2em 0.7em; border-radius: 999px; margin-bottom: 0.75rem;
+    }
+    .next-card h6 { font-weight: 700; margin-bottom: 0.5rem; }
+    .next-card p { font-size: 0.91rem; color: var(--muted); margin-bottom: 0; line-height: 1.65; }
+
+    /* === Shared === */
+    .badge-skill {
+      background: rgba(20, 184, 166, 0.12); color: var(--accent);
+      font-size: 0.88rem; padding: 0.45em 0.8em; margin: 0.2rem;
+      border-radius: 0.4rem; font-weight: 500; display: inline-block;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .badge-skill:hover { background: rgba(20, 184, 166, 0.28); transform: scale(1.06); }
+    .badge-private {
+      font-size: 0.8rem; font-weight: 600;
+      background: rgba(107,114,128,0.12); color: var(--muted);
+      padding: 0.3em 0.8em; border-radius: 0.4rem; display: inline-block;
+    }
+    code {
+      color: var(--accent); font-size: 0.88em;
+      background: rgba(20,184,166,0.1); padding: 0.1em 0.35em; border-radius: 0.25rem;
+    }
+    .text-muted { color: var(--muted) !important; }
+
+    footer {
+      background: var(--footer-bg);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      color: var(--muted); transition: background 0.4s;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 576px) {
+      .fac-hero h1 { font-size: 2rem; }
+      .blob { filter: blur(70px); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="gradient-mesh" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="cyber-grid" aria-hidden="true"></div>
+
+<div id="content-wrapper">
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left me-1"></i>Brooks Houck</a>
+      <div class="d-flex align-items-center gap-2">
+        <ul class="navbar-nav d-none d-lg-flex flex-row gap-3 me-3">
+          <li class="nav-item"><a class="nav-link" href="#problem">Problem</a></li>
+          <li class="nav-item"><a class="nav-link" href="#workflow">Workflow</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pipelines">Pipelines</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reporting">Reporting</a></li>
+          <li class="nav-item"><a class="nav-link" href="#ai">AI</a></li>
+          <li class="nav-item"><a class="nav-link" href="#next">What's Next</a></li>
+        </ul>
+        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="fac-hero">
+    <div class="container" data-aos="fade-down" data-aos-duration="1000">
+      <div class="mb-3">
+        <span class="badge-skill">Python</span>
+        <span class="badge-skill">Flask</span>
+        <span class="badge-skill">OSCAL</span>
+        <span class="badge-skill">Claude API</span>
+        <span class="badge-private"><i class="bi bi-lock-fill me-1"></i>Private Repository</span>
+      </div>
+      <h1>Field Assessment Console</h1>
+      <p class="subtitle">Offline-first security assessment platform for field engagements</p>
+      <p class="description">
+        Built by a practitioner who needed it: a local web application for structured,
+        compliance-grade vulnerability and configuration assessment that operates on disconnected networks
+        and produces audit-ready POA&amp;M, OSCAL, and report outputs without manual formatting overhead.
+      </p>
+      <a href="#problem" class="btn mt-4" style="border: 1px solid var(--accent); color: var(--accent);">
+        <i class="bi bi-arrow-down-circle"></i> Explore
+      </a>
+    </div>
+  </header>
+
+  <!-- The Problem -->
+  <section id="problem" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">The Problem</h2>
+      <p class="section-subtitle">Field assessors need structured tooling. Most of what exists assumes connectivity, a mature security stack, or both.</p>
+      <div class="problem-grid">
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-search problem-icon"></i>
+          <h6>Manual Patch Lookup</h6>
+          <p>Comparing installed OS versions and packages against vendor advisories by hand is slow, error-prone, and doesn't scale across dozens of assets in a single engagement.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-wifi-off problem-icon"></i>
+          <h6>Connectivity Constraints</h6>
+          <p>On-site assessment environments frequently have no internet access. Tooling that depends on cloud connectivity fails at exactly the wrong moment, mid-engagement.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-file-earmark-text problem-icon"></i>
+          <h6>Reporting Overhead</h6>
+          <p>Translating raw findings into a POA&amp;M, formatting OSCAL XML, and generating per-asset decision worksheets can consume hours that should be spent on analysis.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="180">
+          <i class="bi bi-journals problem-icon"></i>
+          <h6>No Findings Lifecycle</h6>
+          <p>Without purpose-built tooling, decisions and remediation status get tracked across spreadsheets with no audit trail linking back to the specific findings that drove them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="workflow" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">How It Works</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">
+        A two-phase design separates internet-dependent data collection from on-site assessment,
+        enabling fully air-gapped operation where it matters most.
+      </p>
+      <div class="workflow-wrapper" data-aos="fade-up" data-aos-delay="100">
+        <svg class="workflow-svg" viewBox="0 0 760 215" xmlns="http://www.w3.org/2000/svg"
+             aria-label="Three-phase workflow: Pre-Assessment online, On-Site Assessment offline, Report and Export">
+
+          <!-- Box 1: Pre-Assessment -->
+          <rect class="wf-box" x="5" y="8" width="225" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="18" y="22" width="68" height="19" rx="4"/>
+          <text class="wf-badge-text" x="52" y="36" text-anchor="middle">ONLINE</text>
+          <line class="wf-divider" x1="18" y1="52" x2="218" y2="52"/>
+          <text class="wf-title" x="117" y="72" text-anchor="middle">Pre-Assessment</text>
+          <text class="wf-item" x="22" y="98">&#x2022; MSRC KB reference data</text>
+          <text class="wf-item" x="22" y="118">&#x2022; NVD CVE cache</text>
+          <text class="wf-item" x="22" y="138">&#x2022; EPSS scores</text>
+          <text class="wf-item" x="22" y="158">&#x2022; CISA KEV catalog</text>
+          <text class="wf-item" x="22" y="178">&#x2022; Linux advisory feeds</text>
+
+          <!-- Arrow 1 -->
+          <line class="wf-arrow" x1="234" y1="107" x2="263" y2="107"/>
+          <polygon class="wf-arrowhead" points="258,102 270,107 258,112"/>
+
+          <!-- Box 2: On-Site Assessment -->
+          <rect class="wf-box" x="270" y="8" width="225" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="283" y="22" width="72" height="19" rx="4"/>
+          <text class="wf-badge-text" x="319" y="36" text-anchor="middle">OFFLINE</text>
+          <line class="wf-divider" x1="283" y1="52" x2="483" y2="52"/>
+          <text class="wf-title" x="382" y="72" text-anchor="middle">On-Site Assessment</text>
+          <text class="wf-item" x="287" y="98">&#x2022; Import collected asset data</text>
+          <text class="wf-item" x="287" y="118">&#x2022; Run assessment pipelines</text>
+          <text class="wf-item" x="287" y="138">&#x2022; Triage &#x26; apply decisions</text>
+          <text class="wf-item" x="287" y="158">&#x2022; EPSS / KEV enrichment</text>
+          <text class="wf-item" x="287" y="178">&#x2022; AI narrative generation</text>
+
+          <!-- Arrow 2 -->
+          <line class="wf-arrow" x1="499" y1="107" x2="528" y2="107"/>
+          <polygon class="wf-arrowhead" points="523,102 535,107 523,112"/>
+
+          <!-- Box 3: Report & Export -->
+          <rect class="wf-box" x="535" y="8" width="220" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="548" y="22" width="66" height="19" rx="4"/>
+          <text class="wf-badge-text" x="581" y="36" text-anchor="middle">OUTPUT</text>
+          <line class="wf-divider" x1="548" y1="52" x2="743" y2="52"/>
+          <text class="wf-title" x="645" y="72" text-anchor="middle">Report &amp; Export</text>
+          <text class="wf-item" x="552" y="98">&#x2022; POA&#x26;M document</text>
+          <text class="wf-item" x="552" y="118">&#x2022; OSCAL JSON / XML</text>
+          <text class="wf-item" x="552" y="138">&#x2022; HTML / PDF report</text>
+          <text class="wf-item" x="552" y="158">&#x2022; CSV &#x26; Excel worksheets</text>
+          <text class="wf-item" x="552" y="178">&#x2022; Project bundle (JSON)</text>
+        </svg>
+      </div>
+      <div class="collection-note mt-4" data-aos="fade-up" data-aos-delay="150">
+        <i class="bi bi-file-code accent"></i>
+        <strong>Collection Scripts</strong> - Auto-generated PowerShell (Windows) and Bash (Linux) scripts
+        require no elevated privileges and produce base64-encoded output for secure transport across air-gapped networks.
+      </div>
+    </div>
+  </section>
+
+  <!-- Assessment Pipelines -->
+  <section id="pipelines" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Assessment Pipelines</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">Six distinct workflows cover the full scope of enterprise patch and configuration assessment.</p>
+      <div class="pipeline-grid">
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-windows pipeline-icon"></i>
+          <h6>Windows - Modern</h6>
+          <p>Compares Update Build Revision (UBR) against Microsoft Security Response Center KB data for Windows 10/11 and Server 2016&ndash;2025.</p>
+        </div>
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-pc-display pipeline-icon"></i>
+          <h6>Windows - Legacy</h6>
+          <p>KB list comparison for end-of-life systems - Windows 7, 8.1, and Server 2008&nbsp;R2 through 2012&nbsp;R2 - with pre-built EOL caches included.</p>
+        </div>
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-terminal pipeline-icon"></i>
+          <h6>Linux</h6>
+          <p>Package advisory matching across Debian, Ubuntu, RHEL, CentOS, Rocky Linux, and AlmaLinux with source package mapping and kernel alias handling.</p>
+        </div>
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-box-seam pipeline-icon"></i>
+          <h6>Third-Party Software</h6>
+          <p>Evaluates 27+ curated Windows software titles - browsers, Java runtimes, PDF readers, VPN clients, and more - against NVD CVE data.</p>
+        </div>
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-shield-check pipeline-icon"></i>
+          <h6>CIS Configuration</h6>
+          <p>Tests system configuration compliance against CIS benchmarks loaded via Excel workbooks, with per-control pass/fail tracking and deviation notes.</p>
+        </div>
+        <div class="pipeline-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-cloud-arrow-down pipeline-icon"></i>
+          <h6>Scanner Import</h6>
+          <p>Imports vulnerability and configuration findings from Tenable Nessus and Qualys CSV exports with optional EPSS and CISA KEV enrichment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compliance & Reporting -->
+  <section id="reporting" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Compliance &amp; Reporting</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">Every export format is generated from the same underlying findings data - no manual formatting required.</p>
+      <div class="reporting-grid">
+        <div class="reporting-card" data-aos="fade-up" data-aos-delay="0">
+          <h6><i class="bi bi-file-earmark-code me-2"></i>Export Formats</h6>
+          <div class="format-item">
+            <i class="bi bi-filetype-json"></i>
+            <div>
+              <div class="format-name">OSCAL JSON</div>
+              <div class="format-desc">Machine-readable POA&amp;M for GRC tooling and automated ingestion</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-filetype-xml"></i>
+            <div>
+              <div class="format-name">OSCAL XML</div>
+              <div class="format-desc">Alternate OSCAL serialization for schema-validated submissions</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-file-richtext"></i>
+            <div>
+              <div class="format-name">HTML / PDF</div>
+              <div class="format-desc">Printable report formatted for stakeholder and leadership delivery</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-filetype-csv"></i>
+            <div>
+              <div class="format-name">CSV</div>
+              <div class="format-desc">Tabular findings export for data analysis and custom reporting</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-file-spreadsheet"></i>
+            <div>
+              <div class="format-name">Excel Worksheets</div>
+              <div class="format-desc">Per-asset decision sheets distributed to and returned from remediation teams</div>
+            </div>
+          </div>
+        </div>
+        <div class="reporting-card" data-aos="fade-up" data-aos-delay="100">
+          <h6><i class="bi bi-clipboard2-check me-2"></i>POA&amp;M Features</h6>
+          <div class="poam-item">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Automated risk scoring per finding with CVSS v3/v4 normalization</span>
+          </div>
+          <div class="poam-item">
+            <i class="bi bi-calendar-check"></i>
+            <span>SLA deadlines configurable per risk level, applied per engagement</span>
+          </div>
+          <div class="poam-item">
+            <i class="bi bi-check2-circle"></i>
+            <span>Six decision statuses: Remediated, Mitigated, In Progress, Not Reviewed, Not Applicable, Propose Risk Acceptance</span>
+          </div>
+          <div class="poam-item">
+            <i class="bi bi-layout-split"></i>
+            <span>Two reporting views: Asset View (per hostname) and Finding View (deduplicated across assets)</span>
+          </div>
+          <div class="poam-item">
+            <i class="bi bi-chat-square-text"></i>
+            <span>Per-finding assessor remarks carried through to all export formats</span>
+          </div>
+          <div class="poam-item">
+            <i class="bi bi-floppy"></i>
+            <span>Project bundles for offline save, transfer to secure storage, and full session restore</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Integration -->
+  <section id="ai" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">AI Integration</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">
+        AI is woven into two distinct workflows: enriching findings during an assessment, and keeping the tool's reference catalogs current over time.
+      </p>
+
+      <p class="text-muted mb-2" style="font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;" data-aos="fade-up">During Assessments</p>
+      <div class="ai-grid mb-4" data-aos="fade-up" data-aos-delay="50">
+        <div class="ai-card">
+          <i class="bi bi-robot ai-icon"></i>
+          <h6>POA&amp;M Narrative Generation</h6>
+          <p>Generates structured remediation context for each finding - what to patch, why it matters, and compensating controls when immediate patching isn't possible. Each finding entry includes CVE IDs, CVSS score, EPSS probability, and KEV status so the LLM produces actionable, risk-calibrated remarks.</p>
+          <div class="ai-note">Works via Claude API with a live key, or exports a structured <code>.md</code> prompt for use in any enterprise or air-gapped LLM. Includes a data classification notice reminding assessors to verify their LLM is approved before pasting.</div>
+        </div>
+        <div class="ai-card">
+          <i class="bi bi-speedometer2 ai-icon"></i>
+          <h6>EPSS &amp; CISA KEV Enrichment</h6>
+          <p>Exploit Prediction Scoring System data enriches each CVE with an active exploitation probability, surfacing high-risk findings that raw CVSS scores would otherwise bury. The CISA Known Exploited Vulnerabilities catalog flags findings under active exploitation by threat actors - the highest-confidence signal for prioritization.</p>
+          <div class="ai-note">Both datasets are fetched during pre-assessment and applied offline. EPSS scores and KEV status are embedded directly into the exported POA&amp;M prompt so narratives are exploitation-aware.</div>
+        </div>
+      </div>
+
+      <p class="text-muted mb-2" style="font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;" data-aos="fade-up">Catalog Maintenance</p>
+      <div class="ai-grid" data-aos="fade-up" data-aos-delay="50">
+        <div class="ai-card">
+          <i class="bi bi-arrow-repeat ai-icon"></i>
+          <h6>CIS Benchmark Version Check</h6>
+          <p>Generates a ready-to-paste prompt listing all currently loaded CIS benchmarks (name and version). Feed it into any enterprise LLM with web browsing - Copilot, ChatGPT, or similar - and it returns whether newer benchmark versions are available, so the operator knows when to source an updated workbook.</p>
+        </div>
+        <div class="ai-card">
+          <i class="bi bi-search ai-icon"></i>
+          <h6>CPE Lookup for New Software</h6>
+          <p>When an operator wants to add a software title to the third-party assessment catalog, they need a valid CPE 2.3 string to query NVD. This generates a targeted prompt - with the software name interpolated in - for any web-browsing LLM to return the correct CPE identifier, which can then be added as a custom catalog entry.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Highlights -->
+  <section id="highlights" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Technical Highlights</h2>
+      <div class="highlight-grid mt-3">
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="0">
+          <span class="highlight-stat">Offline-first</span>
+          <span class="highlight-label">All analysis runs with zero network dependency after the pre-assessment data fetch</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="50">
+          <span class="highlight-stat">Zero-privilege</span>
+          <span class="highlight-label">Collection scripts require no elevated credentials on target systems</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="100">
+          <span class="highlight-stat">6 pipelines</span>
+          <span class="highlight-label">Complete coverage from OS patches to configuration benchmarks and third-party software</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="0">
+          <span class="highlight-stat">27+ titles</span>
+          <span class="highlight-label">Curated third-party software library tracked against NVD CVE data</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="50">
+          <span class="highlight-stat">OSCAL-aligned</span>
+          <span class="highlight-label">POA&amp;M exports formatted to federal compliance standards in JSON and XML</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="100">
+          <span class="highlight-stat">Python + Flask</span>
+          <span class="highlight-label">Lightweight local server with no external database - runs entirely from a single directory</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's Next -->
+  <section id="next" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">What's Next</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">Two features currently in active development.</p>
+      <div class="next-grid">
+        <div class="next-card" data-aos="fade-up" data-aos-delay="0">
+          <span class="next-badge">In Development</span>
+          <h6>CVE Cross-Reference Callouts</h6>
+          <p>When the same CVE appears across multiple pipelines - a Windows KB, a Linux package, and a third-party app all sharing the same CVE - the tool currently has no way to surface that connection. This feature adds a collapsible cross-reference summary to the findings view and a dedicated detail page showing per-pipeline blast radius on a single screen.</p>
+        </div>
+        <div class="next-card" data-aos="fade-up" data-aos-delay="80">
+          <span class="next-badge">In Development</span>
+          <h6>Nessus Host Metadata Enrichment</h6>
+          <p>Adds native <code>.nessus</code> XML import alongside the existing Tenable CSV path, enriching each asset with OS version, BIOS detail, credentialed scan status, and assessor-supplied ownership fields. Results surface as an OS distribution summary across the import batch and per-asset host context throughout reports and exports.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-4 text-center">
+    <div class="container">
+      <p class="mb-1">
+        <a href="mailto:brooks.houck@gmail.com"><i class="bi bi-envelope-fill"></i> Email</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://www.linkedin.com/in/brooks-houck-5651328b/" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i> LinkedIn</a>
+        &nbsp;&middot;&nbsp;
+        <a href="index.html"><i class="bi bi-person"></i> Portfolio</a>
+      </p>
+      <small>&copy; 2026 Brooks Houck. All rights reserved.</small>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+  const html   = document.documentElement;
+  const toggle = document.getElementById("themeToggle");
+  const icon   = document.getElementById("themeIcon");
+
+  function applyTheme(theme) {
+    html.setAttribute("data-theme", theme);
+    icon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars";
+  }
+
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
+  toggle.addEventListener("click", function () {
+    var next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+    applyTheme(next);
+    localStorage.setItem("theme", next);
+  });
+
+  AOS.init({ duration: 800, easing: "ease-out-cubic", once: true, offset: 80 });
+</script>
+
+</body>
+</html>
