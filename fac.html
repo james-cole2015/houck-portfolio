@@ -278,6 +278,37 @@
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--accent);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+    #back-to-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #back-to-top:hover {
+      box-shadow: 0 0 16px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
     @media (max-width: 576px) {
       .fac-hero h1 { font-size: 2rem; }
       .blob { filter: blur(70px); }
@@ -641,6 +672,10 @@
     </div>
   </section>
 
+  <button id="back-to-top" aria-label="Back to top">
+    <i class="bi bi-arrow-up"></i>
+  </button>
+
   <footer class="py-4 text-center">
     <div class="container">
       <p class="mb-1">
@@ -679,6 +714,14 @@
   });
 
   AOS.init({ duration: 800, easing: "ease-out-cubic", once: true, offset: 80 });
+
+  const backToTop = document.getElementById("back-to-top");
+  window.addEventListener("scroll", function () {
+    backToTop.classList.toggle("visible", window.scrollY > 300);
+  });
+  backToTop.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 </script>
 
 </body>

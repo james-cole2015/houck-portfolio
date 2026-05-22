@@ -514,87 +514,56 @@
   <section id="projects" class="glass-section">
     <div class="container" data-aos="fade-up">
       <h2 class="section-title">Projects</h2>
-<<<<<<< HEAD
 
-      <div class="exp-card" data-aos="fade-up" data-aos-delay="100">
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-          <div>
-            <h5>SpookyDecs <span class="fw-normal text-muted">&mdash; Holiday Decoration Management Application</span></h5>
-            <small class="text-muted">
-              Personal Project &nbsp;&middot;&nbsp;
-              <a href="https://github.com/james-cole2015/spookydecs" target="_blank" rel="noopener" style="color: var(--accent);">
-                <i class="bi bi-github"></i> View on GitHub
+      <div class="row g-3">
+
+        <div class="col-12 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="exp-card h-100">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+              <div>
+                <h5 class="mb-0">SpookyDecs</h5>
+                <small class="text-muted">Holiday Decoration Management</small>
+              </div>
+              <a href="https://james-cole2015.github.io/spookydecs-portfolio/" target="_blank" rel="noopener" class="btn btn-sm" style="border: 1px solid var(--accent); color: var(--accent); white-space: nowrap;">
+                View <i class="bi bi-arrow-right ms-1"></i>
               </a>
-            </small>
+            </div>
+            <p class="mb-3" style="font-size: 0.93rem; line-height: 1.65;">
+              Full-lifecycle decoration platform with AI-assisted workflows, serverless AWS backend, and a 15-subdomain frontend — built without a third-party application framework.
+            </p>
+            <div>
+              <span class="badge badge-skill">AWS Bedrock</span>
+              <span class="badge badge-skill">Lambda</span>
+              <span class="badge badge-skill">DynamoDB</span>
+              <span class="badge badge-skill">Python</span>
+            </div>
           </div>
         </div>
 
-        <p class="mt-3" style="font-size: 0.97rem; line-height: 1.75;">
-          A full-lifecycle decoration management platform covering inventory tracking, maintenance scheduling,
-          idea management, and AI-assisted workflows — built end-to-end on a serverless AWS stack with no
-          third-party application framework.
-        </p>
-
-        <h6>AI &amp; Agent Features</h6>
-        <ul>
-          <li>Designed and built <strong>Iris</strong>, an NLP-driven AI agent powered by AWS Bedrock (Anthropic Claude) with a custom multi-step tool-use loop — enabling users to query inventory, log maintenance, and manage items via natural language</li>
-          <li>Implemented multimodal vector search using <strong>Cohere Embed v4</strong> and Amazon Titan Embed Text v2, supporting semantic photo tagging and AI-assisted item discovery across catalog images stored in S3</li>
-          <li>Integrated cost tracking and automated financial summaries as AI-assisted features surfaced through the Iris agent interface</li>
-        </ul>
-
-        <h6>Architecture &amp; Engineering</h6>
-        <ul>
-          <li>Architected a 15-subdomain frontend (Vite build system, vanilla JS) with each subdomain independently deployed to S3 + CloudFront — covering inventory, gallery, tracker, ideas, workbench, and more</li>
-          <li>Built a Python 3.12 serverless backend composed of discrete AWS Lambda functions behind API Gateway, with a shared Lambda Layer for shared utilities</li>
-          <li>Implemented an event-driven architecture using SQS consumer patterns to decouple inventory writes from downstream side effects such as search indexing, cost calculation, and maintenance triggers</li>
-          <li>Engineered a rules-based <em>Inspector</em> subsystem for data quality — covering field validation, duplicate detection, and entity relationship integrity across the item catalog</li>
-          <li>Secured the platform with AWS Cognito including a Pre-Token Generation trigger that injects custom role and environment claims for fine-grained access control</li>
-          <li>Established GitHub Actions + AWS CodeBuild CI/CD pipelines using OIDC-based authentication for zero-credential deployments across all Lambda functions and frontend subdomains</li>
-        </ul>
-
-        <div class="mt-3">
-          <span class="badge badge-skill">AWS Lambda</span>
-          <span class="badge badge-skill">API Gateway</span>
-          <span class="badge badge-skill">DynamoDB</span>
-          <span class="badge badge-skill">AWS Bedrock</span>
-          <span class="badge badge-skill">Anthropic Claude</span>
-          <span class="badge badge-skill">Cohere Embed v4</span>
-          <span class="badge badge-skill">Vector Search</span>
-          <span class="badge badge-skill">S3 &amp; CloudFront</span>
-          <span class="badge badge-skill">SQS</span>
-          <span class="badge badge-skill">Cognito</span>
-          <span class="badge badge-skill">Python</span>
-          <span class="badge badge-skill">Vite</span>
-          <span class="badge badge-skill">GitHub Actions</span>
-          <span class="badge badge-skill">AWS CodeBuild</span>
-        </div>
-      </div>
-
-      <div class="exp-card" data-aos="fade-up" data-aos-delay="200">
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-          <div>
-            <h5>Field Assessment Console</h5>
-            <small class="text-muted">Python &middot; Flask &middot; OSCAL &middot; Offline-first &middot; Claude API</small>
+        <div class="col-12 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="exp-card h-100">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+              <div>
+                <h5 class="mb-0">Field Assessment Console</h5>
+                <small class="text-muted">Offline Security Assessment Tool</small>
+              </div>
+              <a href="fac.html" class="btn btn-sm" style="border: 1px solid var(--accent); color: var(--accent); white-space: nowrap;">
+                View <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+            <p class="mb-3" style="font-size: 0.93rem; line-height: 1.65;">
+              Local, offline-first platform for on-site security assessments — Windows, Linux, and CIS benchmarks — with OSCAL-compliant POA&amp;M exports.
+            </p>
+            <div>
+              <span class="badge badge-skill">Python</span>
+              <span class="badge badge-skill">Flask</span>
+              <span class="badge badge-skill">OSCAL</span>
+              <span class="badge badge-skill">Claude API</span>
+            </div>
           </div>
-          <a href="fac.html" class="btn btn-sm" style="border: 1px solid var(--accent); color: var(--accent); white-space: nowrap;">
-            Explore <i class="bi bi-arrow-right ms-1"></i>
-          </a>
         </div>
-        <p class="mb-3">
-          A local, offline-first platform for conducting on-site security assessments across Windows patch
-          levels, Linux packages, third-party software, and CIS configuration benchmarks - producing
-          OSCAL-compliant POA&amp;M exports without manual formatting overhead.
-        </p>
-        <div>
-          <span class="badge badge-skill">Python</span>
-          <span class="badge badge-skill">Flask</span>
-          <span class="badge badge-skill">OSCAL</span>
-          <span class="badge badge-skill">Offline-first</span>
-          <span class="badge badge-skill">Claude API</span>
-          <span class="badge badge-skill">EPSS / KEV</span>
-        </div>
-      </div>
 
+      </div>
     </div>
   </section>
 
