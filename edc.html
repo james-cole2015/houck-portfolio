@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exposure Discovery Console | Brooks Houck</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+
+  <style>
+    :root {
+      --accent: #14b8a6;
+      --accent-glow: rgba(20, 184, 166, 0.35);
+      --text: #111827;
+      --muted: #6b7280;
+      --card-bg: rgba(255, 255, 255, 0.45);
+      --card-border: rgba(229, 231, 235, 0.35);
+      --section-bg: rgba(255, 255, 255, 0.35);
+      --navbar-bg: rgba(255, 255, 255, 0.55);
+      --footer-bg: rgba(255, 255, 255, 0.45);
+      --blob1: rgba(20, 184, 166, 0.38);
+      --blob2: rgba(59, 130, 246, 0.33);
+      --blob3: rgba(124, 58, 237, 0.26);
+      --blob4: rgba(30, 41, 59, 0.18);
+      --mesh-base: #f8fafc;
+      --grid-color: rgba(100, 116, 139, 0.05);
+      --scan-color: rgba(20, 184, 166, 0.035);
+    }
+
+    [data-theme="dark"] {
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card-bg: rgba(30, 41, 59, 0.50);
+      --card-border: rgba(51, 65, 85, 0.35);
+      --section-bg: rgba(15, 23, 42, 0.40);
+      --navbar-bg: rgba(15, 23, 42, 0.60);
+      --footer-bg: rgba(15, 23, 42, 0.50);
+      --blob1: rgba(20, 184, 166, 0.45);
+      --blob2: rgba(59, 130, 246, 0.40);
+      --blob3: rgba(124, 58, 237, 0.33);
+      --blob4: rgba(30, 41, 59, 0.30);
+      --mesh-base: #0f172a;
+      --grid-color: rgba(148, 163, 184, 0.07);
+      --scan-color: rgba(20, 184, 166, 0.045);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      transition: color 0.4s;
+      overflow-x: hidden;
+    }
+
+    /* === Background === */
+    .gradient-mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background-color: var(--mesh-base);
+      overflow: hidden; transition: background-color 0.6s;
+    }
+    .gradient-mesh .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); mix-blend-mode: screen;
+      will-change: transform; transition: background 0.6s;
+    }
+    [data-theme="dark"] .gradient-mesh .blob { mix-blend-mode: lighten; }
+    .blob-1 { width: 65vmax; height: 65vmax; background: var(--blob1); top: -18%; left: -12%; animation: drift1 20s ease-in-out infinite alternate; }
+    .blob-2 { width: 58vmax; height: 58vmax; background: var(--blob2); top: 35%; right: -18%; animation: drift2 25s ease-in-out infinite alternate; }
+    .blob-3 { width: 52vmax; height: 52vmax; background: var(--blob3); bottom: -12%; left: 20%; animation: drift3 18s ease-in-out infinite alternate; }
+    .blob-4 { width: 48vmax; height: 48vmax; background: var(--blob4); top: 15%; left: 45%; animation: drift4 22s ease-in-out infinite alternate; }
+    @keyframes drift1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(12vw,18vh) scale(1.15); } }
+    @keyframes drift2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-14vw,-12vh) scale(1.1); } }
+    @keyframes drift3 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(10vw,-15vh) scale(1.2); } }
+    @keyframes drift4 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-8vw,10vh) scale(1.08); } }
+
+    .cyber-grid {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg,  var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px),
+        repeating-linear-gradient(90deg, var(--grid-color) 0px, var(--grid-color) 1px, transparent 1px, transparent 44px);
+      background-size: 44px 44px;
+    }
+    .cyber-grid::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 120px;
+      background: linear-gradient(180deg, transparent, var(--scan-color), transparent);
+      animation: scanline 9s linear infinite;
+    }
+    @keyframes scanline { 0% { top: -120px; } 100% { top: 100%; } }
+
+    #content-wrapper { position: relative; z-index: 2; }
+
+    /* === Navbar === */
+    .accent { color: var(--accent); }
+    .navbar {
+      background: var(--navbar-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      transition: background 0.4s;
+    }
+    .navbar-brand { color: var(--text) !important; font-weight: 700; }
+    .nav-link { color: var(--text) !important; opacity: 0.85; transition: opacity 0.2s, color 0.2s; }
+    .nav-link:hover { opacity: 1; color: var(--accent) !important; }
+    #themeToggle { border-color: var(--muted); color: var(--text); transition: color 0.3s, border-color 0.3s; }
+    #themeToggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* === Hero === */
+    .edc-hero {
+      min-height: 58vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 4rem 0 3rem;
+    }
+    .edc-hero h1 { font-size: 2.8rem; font-weight: 800; }
+    .edc-hero .subtitle { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin-top: 0.6rem; }
+    .edc-hero .description {
+      color: var(--muted); max-width: 680px; margin: 1rem auto 0;
+      font-size: 1.02rem; line-height: 1.78;
+    }
+
+    /* === Sections === */
+    .glass-section {
+      background: var(--section-bg);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      padding: 4rem 0; transition: background 0.4s;
+    }
+    .section-title { font-weight: 700; margin-bottom: 0.6rem; color: var(--accent); font-size: 1.8rem; }
+    .section-subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 1rem; max-width: 750px; }
+
+    /* === Problem Grid === */
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .problem-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem; padding: 1.4rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .problem-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .problem-card .problem-icon { font-size: 1.6rem; color: var(--accent); display: block; margin-bottom: 0.7rem; }
+    .problem-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .problem-card p { font-size: 0.92rem; color: var(--muted); margin-bottom: 0; line-height: 1.65; }
+
+    /* === Workflow SVG === */
+    .workflow-wrapper { overflow-x: auto; padding: 0.5rem 0 1rem; }
+    .workflow-svg { display: block; width: 100%; min-width: 640px; }
+    .wf-box  { fill: var(--card-bg); stroke: var(--accent); stroke-width: 1.5; }
+    .wf-badge-bg { fill: rgba(20,184,166,0.15); }
+    .wf-badge-text {
+      fill: var(--accent); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.1em; font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .wf-title {
+      fill: var(--accent); font-size: 12.5px; font-weight: 700;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .wf-item { fill: var(--text); font-size: 11px; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .wf-arrow   { stroke: var(--accent); stroke-width: 2; fill: none; }
+    .wf-arrowhead { fill: var(--accent); }
+    .wf-divider { stroke: var(--card-border); stroke-width: 1; }
+
+    /* === Feature Grid === */
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.1rem; }
+    .feature-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-top: 3px solid var(--accent);
+      border-radius: 0.75rem; padding: 1.3rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px var(--accent-glow); }
+    .feature-card .feature-icon { font-size: 1.75rem; color: var(--accent); display: block; margin-bottom: 0.6rem; }
+    .feature-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+
+    /* === Export Reporting === */
+    .reporting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .reporting-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem; padding: 1.5rem;
+    }
+    .reporting-card h6 { font-weight: 700; color: var(--accent); margin-bottom: 1rem; font-size: 1rem; }
+    .format-item {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--card-border);
+    }
+    .format-item:last-child { border-bottom: none; }
+    .format-item i { font-size: 1.05rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .format-item .format-name { font-weight: 600; font-size: 0.9rem; }
+    .format-item .format-desc { font-size: 0.84rem; color: var(--muted); }
+
+    /* === AI Grid === */
+    .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    .ai-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-left: 4px solid var(--accent);
+      border-radius: 0.75rem; padding: 1.4rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .ai-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .ai-card .ai-icon { font-size: 1.6rem; color: var(--accent); display: block; margin-bottom: 0.65rem; }
+    .ai-card h6 { font-weight: 700; margin-bottom: 0.4rem; }
+    .ai-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+    .ai-note { font-size: 0.82rem; color: var(--accent); margin-top: 0.6rem; font-style: italic; }
+
+    /* === Highlight Grid === */
+    .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .highlight-item {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border); border-radius: 0.75rem;
+      padding: 1.4rem; text-align: center;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .highlight-item:hover { transform: translateY(-3px); box-shadow: 0 6px 24px var(--accent-glow); }
+    .highlight-stat { font-size: 1.6rem; font-weight: 800; color: var(--accent); display: block; }
+    .highlight-label { font-size: 0.84rem; color: var(--muted); display: block; margin-top: 0.3rem; line-height: 1.45; }
+
+    /* === Shared === */
+    .badge-skill {
+      background: rgba(20, 184, 166, 0.12); color: var(--accent);
+      font-size: 0.88rem; padding: 0.45em 0.8em; margin: 0.2rem;
+      border-radius: 0.4rem; font-weight: 500; display: inline-block;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .badge-skill:hover { background: rgba(20, 184, 166, 0.28); transform: scale(1.06); }
+    .badge-private {
+      font-size: 0.8rem; font-weight: 600;
+      background: rgba(107,114,128,0.12); color: var(--muted);
+      padding: 0.3em 0.8em; border-radius: 0.4rem; display: inline-block;
+    }
+    .text-muted { color: var(--muted) !important; }
+
+    footer {
+      background: var(--footer-bg);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      color: var(--muted); transition: background 0.4s;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 576px) {
+      .edc-hero h1 { font-size: 2rem; }
+      .blob { filter: blur(70px); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="gradient-mesh" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="cyber-grid" aria-hidden="true"></div>
+
+<div id="content-wrapper">
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left me-1"></i>Brooks Houck</a>
+      <div class="d-flex align-items-center gap-2">
+        <ul class="navbar-nav d-none d-lg-flex flex-row gap-3 me-3">
+          <li class="nav-item"><a class="nav-link" href="#problem">Problem</a></li>
+          <li class="nav-item"><a class="nav-link" href="#workflow">Workflow</a></li>
+          <li class="nav-item"><a class="nav-link" href="#wizard">Wizard</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tools">Tools</a></li>
+          <li class="nav-item"><a class="nav-link" href="#exports">Exports</a></li>
+          <li class="nav-item"><a class="nav-link" href="#ai">AI</a></li>
+        </ul>
+        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="edc-hero">
+    <div class="container" data-aos="fade-down" data-aos-duration="1000">
+      <div class="mb-3">
+        <span class="badge-skill">Python</span>
+        <span class="badge-skill">Flask</span>
+        <span class="badge-skill">CTEM</span>
+        <span class="badge-skill">Claude API</span>
+        <span class="badge-private"><i class="bi bi-lock-fill me-1"></i>Private Repository</span>
+      </div>
+      <h1>Exposure Discovery Console</h1>
+      <p class="subtitle">Structured CTEM discovery platform for client engagements</p>
+      <p class="description">
+        Built by a practitioner who needed it: a local application for running structured
+        Continuous Threat Exposure Management discovery sessions &mdash; capturing stakeholder
+        conversations across all six CTEM phases, assessing tool coverage, and producing
+        AI-assisted SOW context without manual synthesis overhead.
+      </p>
+      <a href="#problem" class="btn mt-4" style="border: 1px solid var(--accent); color: var(--accent);">
+        <i class="bi bi-arrow-down-circle"></i> Explore
+      </a>
+    </div>
+  </header>
+
+  <!-- The Problem -->
+  <section id="problem" class="glass-section">
+    <div class="container" data-aos="fade-up">
+      <h2 class="section-title">The Problem</h2>
+      <p class="section-subtitle">CTEM discovery sessions are high-value but structurally inconsistent. Without purpose-built tooling, both collection and synthesis fall apart.</p>
+      <div class="problem-grid">
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-journal-x problem-icon"></i>
+          <h6>No Repeatable Structure</h6>
+          <p>Discovery conversations with client stakeholders happen across different roles and phases. Without a shared question bank and scoring model, every engagement starts from scratch and quality varies by consultant.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-people problem-icon"></i>
+          <h6>Stakeholder Availability Constraints</h6>
+          <p>Key contacts &mdash; tool owners, operations leads, security managers &mdash; often can't participate in live sessions. There's no standard way to collect their input asynchronously and merge it back into the engagement.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-tools problem-icon"></i>
+          <h6>Tool Inventory Is Unstructured</h6>
+          <p>Clients maintain sprawling security tool portfolios with overlapping coverage and unclear ownership. Capturing rationalization data in a consistent, analysis-ready format during a live engagement is impractical without dedicated tooling.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="180">
+          <i class="bi bi-file-earmark-text problem-icon"></i>
+          <h6>SOW Synthesis Is Manual</h6>
+          <p>Translating scattered discovery notes, SOW signals, and tool data into a coherent scope-of-work context takes hours of post-session synthesis that could be automated with the right structure in place during collection.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="workflow" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">How It Works</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">
+        A three-phase design separates preparation from live discovery and output generation,
+        supporting both fully connected and offline engagement environments.
+      </p>
+      <div class="workflow-wrapper" data-aos="fade-up" data-aos-delay="100">
+        <svg class="workflow-svg" viewBox="0 0 760 215" xmlns="http://www.w3.org/2000/svg"
+             aria-label="Three-phase workflow: Preparation, Discovery Session, Output and Synthesis">
+
+          <!-- Box 1: Preparation -->
+          <rect class="wf-box" x="5" y="8" width="225" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="18" y="22" width="84" height="19" rx="4"/>
+          <text class="wf-badge-text" x="60" y="36" text-anchor="middle">PREPARATION</text>
+          <line class="wf-divider" x1="18" y1="52" x2="218" y2="52"/>
+          <text class="wf-title" x="117" y="72" text-anchor="middle">Pre-Engagement</text>
+          <text class="wf-item" x="22" y="98">&#x2022; Document checklist</text>
+          <text class="wf-item" x="22" y="118">&#x2022; Tool registry setup</text>
+          <text class="wf-item" x="22" y="138">&#x2022; Industry configuration</text>
+          <text class="wf-item" x="22" y="158">&#x2022; Stakeholder form export</text>
+          <text class="wf-item" x="22" y="178">&#x2022; Question bank review</text>
+
+          <!-- Arrow 1 -->
+          <line class="wf-arrow" x1="234" y1="107" x2="263" y2="107"/>
+          <polygon class="wf-arrowhead" points="258,102 270,107 258,112"/>
+
+          <!-- Box 2: Discovery -->
+          <rect class="wf-box" x="270" y="8" width="225" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="283" y="22" width="76" height="19" rx="4"/>
+          <text class="wf-badge-text" x="321" y="36" text-anchor="middle">DISCOVERY</text>
+          <line class="wf-divider" x1="283" y1="52" x2="483" y2="52"/>
+          <text class="wf-title" x="382" y="72" text-anchor="middle">Live Session</text>
+          <text class="wf-item" x="287" y="98">&#x2022; Wizard-guided conversations</text>
+          <text class="wf-item" x="287" y="118">&#x2022; Per-question scoring</text>
+          <text class="wf-item" x="287" y="138">&#x2022; SOW signal tagging</text>
+          <text class="wf-item" x="287" y="158">&#x2022; Tool rationalization</text>
+          <text class="wf-item" x="287" y="178">&#x2022; Stakeholder response import</text>
+
+          <!-- Arrow 2 -->
+          <line class="wf-arrow" x1="499" y1="107" x2="528" y2="107"/>
+          <polygon class="wf-arrowhead" points="523,102 535,107 523,112"/>
+
+          <!-- Box 3: Output -->
+          <rect class="wf-box" x="535" y="8" width="220" height="198" rx="10"/>
+          <rect class="wf-badge-bg" x="548" y="22" width="60" height="19" rx="4"/>
+          <text class="wf-badge-text" x="578" y="36" text-anchor="middle">OUTPUT</text>
+          <line class="wf-divider" x1="548" y1="52" x2="743" y2="52"/>
+          <text class="wf-title" x="645" y="72" text-anchor="middle">Synthesis &amp; Export</text>
+          <text class="wf-item" x="552" y="98">&#x2022; AI-assisted SOW context</text>
+          <text class="wf-item" x="552" y="118">&#x2022; Heatmap export</text>
+          <text class="wf-item" x="552" y="138">&#x2022; Tool inventory report</text>
+          <text class="wf-item" x="552" y="158">&#x2022; Analysis for LLM review</text>
+          <text class="wf-item" x="552" y="178">&#x2022; Stakeholder questionnaire</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Discovery Wizard -->
+  <section id="wizard" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Discovery Wizard</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">Two navigation modes over the same question bank &mdash; choose the view that fits how the session is running.</p>
+      <div class="feature-grid">
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-person-badge feature-icon"></i>
+          <h6>Persona Mode</h6>
+          <p>Organizes questions by stakeholder conversation &mdash; CISO, VM Lead, Operations, Cloud Security, and more. Designed for sequentially working through a set of planned interviews, with conversation summaries and notes between each group of questions.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-diagram-3 feature-icon"></i>
+          <h6>Phase Mode</h6>
+          <p>Reorganizes the same question bank by CTEM phase (PREPARE &rarr; IDENTIFY &rarr; PRIORITIZE &rarr; VALIDATE &rarr; MOBILIZE &rarr; REPORT). Useful when conversations don't follow persona boundaries, or for reviewing coverage gaps across a specific phase.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-bookmark-star feature-icon"></i>
+          <h6>Per-Question Capture</h6>
+          <p>Every question supports a 1&ndash;5 maturity score, rich-text notes (Quill editor), SOW signal tagging (Gap, Scope, Effort, Tool), flagging for unresolved items, and skip for out-of-scope questions. State is auto-saved and persists across restarts.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-envelope-paper feature-icon"></i>
+          <h6>Offline Stakeholder Collection</h6>
+          <p>Generates a self-contained Excel workbook with all discovery questions organized by CTEM phase. A stakeholder fills it in on their own time and returns it; the consultant imports responses directly into the active session as question notes.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-map feature-icon"></i>
+          <h6>Heatmap View</h6>
+          <p>Visualizes session scores across the full CTEM phase &times; stakeholder conversation matrix. Surfaces coverage gaps and high/low maturity areas at a glance, providing a single-screen summary of where the client stands across the framework.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-gear feature-icon"></i>
+          <h6>Admin &amp; Customization</h6>
+          <p>Operators can manage the question bank, add industry-specific tailoring entries, and configure SOW deliverable options through a built-in admin interface &mdash; without touching the source files or restarting the application.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tool Intelligence -->
+  <section id="tools" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Tool Intelligence</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">A structured workflow for capturing and analyzing the client's security tool portfolio &mdash; from intake through CTEM alignment.</p>
+      <div class="feature-grid">
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-box-seam feature-icon"></i>
+          <h6>Tool Registry</h6>
+          <p>Tracks the client's full security tool inventory within the session. Each tool is categorized and linked to rationalization data collected through two separate workflows targeted at different audiences.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-person-check feature-icon"></i>
+          <h6>Client Assessment Workflow</h6>
+          <p>A plain-language questionnaire the client fills in about each tool &mdash; ownership, deployment status, utilization, and perceived value. Can be completed live or via the self-contained stakeholder handoff form, requiring no CTEM knowledge from the client contact.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="120">
+          <i class="bi bi-shield-check feature-icon"></i>
+          <h6>CTEM Tool Alignment</h6>
+          <p>A consultant-completed assessment mapping each tool to CTEM phases, evaluating integration maturity, identifying consolidation candidates, and surfacing coverage gaps. Requires framework knowledge and cross-tool context only the consultant can provide.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+          <i class="bi bi-bar-chart-line feature-icon"></i>
+          <h6>Tools Analysis</h6>
+          <p>Synthesizes rationalization data into three views: a phase coverage matrix showing which tools support each CTEM stage, a deployment maturity chart across the portfolio, and a ranked list of consolidation candidates with overlap descriptions.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="60">
+          <i class="bi bi-send feature-icon"></i>
+          <h6>Stakeholder Handoff Form</h6>
+          <p>Generates a self-contained HTML form pre-populated with the client fields only. The client contact fills it out offline, downloads a JSON response file, and returns it. The consultant imports it to populate the Tool Registry without touching a spreadsheet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Exports -->
+  <section id="exports" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Exports &amp; Outputs</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">Every export is generated from the same underlying session data &mdash; no reformatting or copy-paste required.</p>
+      <div class="reporting-grid">
+        <div class="reporting-card" data-aos="fade-up" data-aos-delay="0">
+          <h6><i class="bi bi-file-earmark-arrow-down me-2"></i>Export Types</h6>
+          <div class="format-item">
+            <i class="bi bi-file-text"></i>
+            <div>
+              <div class="format-name">SOW Context</div>
+              <div class="format-desc">AI-ready markdown of discovery notes, SOW signals, and tool data &mdash; structured for direct LLM synthesis into a scope-of-work draft</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-grid-3x3"></i>
+            <div>
+              <div class="format-name">Heatmap</div>
+              <div class="format-desc">Phase &times; conversation score matrix as a structured markdown document for stakeholder review</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-box-seam"></i>
+            <div>
+              <div class="format-name">Tool Inventory</div>
+              <div class="format-desc">Full tool registry with rationalization responses formatted for leadership reporting</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-robot"></i>
+            <div>
+              <div class="format-name">Analysis Export</div>
+              <div class="format-desc">Scored session data and tool rationalization combined into a prompt-ready format for LLM-assisted CTEM gap analysis</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-file-spreadsheet"></i>
+            <div>
+              <div class="format-name">Stakeholder Questionnaire</div>
+              <div class="format-desc">Per-phase Excel workbook distributed to stakeholders for async response collection</div>
+            </div>
+          </div>
+        </div>
+        <div class="reporting-card" data-aos="fade-up" data-aos-delay="100">
+          <h6><i class="bi bi-clipboard2-check me-2"></i>SOW Export Features</h6>
+          <div class="format-item">
+            <i class="bi bi-funnel"></i>
+            <div>
+              <div class="format-name">Signal Filtering</div>
+              <div class="format-desc">Skipped and N/A questions are excluded; flagged questions are separated into an Unresolved Scope Items appendix</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-list-check"></i>
+            <div>
+              <div class="format-name">Configurable Deliverables</div>
+              <div class="format-desc">Consultant selects proposed deliverables from a managed list and adds free-text items before export</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-wrench-adjustable"></i>
+            <div>
+              <div class="format-name">Tool Rationalization Toggle</div>
+              <div class="format-desc">Optionally appends tool assessment data to the SOW context when rationalization is complete</div>
+            </div>
+          </div>
+          <div class="format-item">
+            <i class="bi bi-pencil-square"></i>
+            <div>
+              <div class="format-name">Scope Notes</div>
+              <div class="format-desc">Consultant adds free-text constraints or client context before export &mdash; prepended as a dedicated section</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Integration -->
+  <section id="ai" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">AI Integration</h2>
+      <p class="section-subtitle" data-aos="fade-right" data-aos-delay="50">
+        AI assists with the highest-friction post-session task: synthesizing unstructured discovery notes into a structured scope-of-work narrative.
+      </p>
+      <div class="ai-grid" data-aos="fade-up" data-aos-delay="50">
+        <div class="ai-card">
+          <i class="bi bi-robot ai-icon"></i>
+          <h6>SOW Context Generation</h6>
+          <p>The SOW export produces a structured markdown document containing discovery notes, SOW signals, scored findings, and tool data &mdash; formatted with the session context, proposed deliverables, and scope notes already embedded. Feed it to any capable LLM to generate a first-draft scope-of-work narrative without manual synthesis.</p>
+          <div class="ai-note">Works via the Claude API with a configured key, or as a prompt-ready export for any enterprise or air-gapped LLM. Includes a data classification notice reminding consultants to verify their LLM is approved before pasting client data.</div>
+        </div>
+        <div class="ai-card">
+          <i class="bi bi-graph-up ai-icon"></i>
+          <h6>Analysis Export for LLM Review</h6>
+          <p>A dedicated analysis export combines session scores, engagement notes, and the full tool rationalization dataset into a prompt-ready format. Designed to be fed to an LLM for CTEM maturity gap analysis, consolidation recommendations, and programme prioritization insights.</p>
+          <div class="ai-note">Tool rationalization answers are labelled by source &mdash; client self-report vs. consultant assessment &mdash; so the LLM can weight input appropriately when generating recommendations.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Highlights -->
+  <section id="highlights" class="glass-section">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-right">Technical Highlights</h2>
+      <div class="highlight-grid mt-3">
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="0">
+          <span class="highlight-stat">Offline-first</span>
+          <span class="highlight-label">Runs entirely on the consultant's laptop with no server infrastructure or internet dependency</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="50">
+          <span class="highlight-stat">2 wizard modes</span>
+          <span class="highlight-label">Persona and phase views over the same question bank &mdash; switch without losing any captured data</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="100">
+          <span class="highlight-stat">6 CTEM phases</span>
+          <span class="highlight-label">Question bank spans PREPARE through REPORT with per-question phase tagging</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="0">
+          <span class="highlight-stat">5 export types</span>
+          <span class="highlight-label">SOW context, heatmap, tool inventory, analysis, and stakeholder questionnaire from a single session</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="50">
+          <span class="highlight-stat">Zero-dependency</span>
+          <span class="highlight-label">Quill and Chart.js bundled locally &mdash; no CDN calls, works fully air-gapped</span>
+        </div>
+        <div class="highlight-item" data-aos="fade-up" data-aos-delay="100">
+          <span class="highlight-stat">Python + Flask</span>
+          <span class="highlight-label">Lightweight local server with native Win32 file dialogs &mdash; no tkinter, no database</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-4 text-center">
+    <div class="container">
+      <p class="mb-1">
+        <a href="mailto:brooks.houck@gmail.com"><i class="bi bi-envelope-fill"></i> Email</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://www.linkedin.com/in/brooks-houck-5651328b/" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i> LinkedIn</a>
+        &nbsp;&middot;&nbsp;
+        <a href="index.html"><i class="bi bi-person"></i> Portfolio</a>
+      </p>
+      <small>&copy; 2026 Brooks Houck. All rights reserved.</small>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+  const html   = document.documentElement;
+  const toggle = document.getElementById("themeToggle");
+  const icon   = document.getElementById("themeIcon");
+
+  function applyTheme(theme) {
+    html.setAttribute("data-theme", theme);
+    icon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars";
+  }
+
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
+  toggle.addEventListener("click", function () {
+    var next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+    applyTheme(next);
+    localStorage.setItem("theme", next);
+  });
+
+  AOS.init({ duration: 800, easing: "ease-out-cubic", once: true, offset: 80 });
+</script>
+
+</body>
+</html>
