@@ -245,6 +245,13 @@
       .edc-hero h1 { font-size: 2rem; }
       .blob { filter: blur(70px); }
     }
+
+    /* Show content if AOS JS fails to load or initialize */
+    body:not([data-aos-easing]) [data-aos] {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
   </style>
 </head>
 
